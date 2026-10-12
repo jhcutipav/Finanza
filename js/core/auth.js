@@ -1,5 +1,5 @@
 /* Inicio de sesión de FinSet; el backend de Apps Script valida todas las sesiones. */
-const FINSET_AUTH_KEY='WszB3svTeQCQYnngMELTw9Vuf';
+const FINSET_AUTH_KEY='finset_auth_session';
 
 /** Obtiene el token de sesión guardado como temporal o persistente. */
 function authStoredToken(){return localStorage.getItem(FINSET_AUTH_KEY)||sessionStorage.getItem(FINSET_AUTH_KEY)||'';}
