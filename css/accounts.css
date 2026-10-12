@@ -1,0 +1,93 @@
+/* ========================================================================== 
+   accounts.css — Carrusel y detalle individual de cuentas.
+   ========================================================================== */
+
+.accounts-summarybar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:18px;padding:16px 20px}
+.accounts-global-balance{display:flex;flex-direction:column;gap:2px;min-width:0}
+.accounts-global-balance strong{font-family:'Sora',sans-serif;font-size:23px;font-weight:800}
+.accounts-global-balance small{font-size:11px}
+.wallet-actions{display:flex;gap:9px;flex-wrap:wrap;margin:0}
+
+/* Etiquetas de acceso directo; el color permite reconocer cada cuenta rápidamente. */
+.accounts-quickfilters{display:flex;align-items:center;gap:8px;max-width:100%;margin:0 0 16px;padding:2px 1px 8px;overflow-x:auto;scrollbar-width:thin}
+.accounts-quick-chip{flex:0 0 auto;padding:8px 14px;border:1px solid color-mix(in srgb,var(--account-tag-color) 40%,var(--border));border-radius:999px;background:color-mix(in srgb,var(--account-tag-color) 10%,var(--card-bg));color:var(--text-muted);font-size:12px;font-weight:650;white-space:nowrap;cursor:pointer;transition:background .15s ease,border-color .15s ease,color .15s ease}
+.accounts-quick-chip:hover,.accounts-quick-chip.active{border-color:var(--account-tag-color);background:color-mix(in srgb,var(--account-tag-color) 20%,var(--card-bg));color:var(--text)}
+.account-color-control{display:flex;align-items:center;gap:12px}
+.account-color-control input[type=color]{width:48px;height:36px;padding:3px;border:1px solid var(--border);border-radius:9px;background:var(--card-bg);cursor:pointer}
+
+.account-detail-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;align-items:stretch;margin-bottom:18px}
+.account-carousel,.account-detail-panel{min-width:0;min-height:340px;padding:20px}
+.account-carousel .card-head{align-items:flex-start;margin-bottom:16px}
+.account-carousel .card-head h3{margin:0}
+.account-carousel .card-head p{margin:5px 0 0}
+.account-carousel-controls{display:flex;gap:7px}
+.account-carousel-controls button{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;background:var(--card-bg);color:var(--text);font-size:24px;line-height:1;cursor:pointer}
+.account-carousel-controls button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.account-carousel-controls button:disabled{opacity:.35;cursor:default}
+.account-carousel-viewport{overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.account-carousel-viewport::-webkit-scrollbar{display:none}
+.account-cards{display:flex;gap:16px;width:100%;box-sizing:border-box;padding:6px max(12px,calc((100% - 390px)/2)) 12px;}
+.account-slide{flex:0 0 390px;scroll-snap-align:center;scroll-snap-stop:always}
+.acc-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:232px;min-height:0;padding:22px;border:0;border-radius:18px;overflow:hidden;background:var(--account-card-bg);color:#fff;text-align:left;box-shadow:0 16px 30px rgba(20,22,38,.22);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;}
+.acc-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(255,255,255,.22),transparent 50%),linear-gradient(145deg,transparent 55%,rgba(255,255,255,.06));pointer-events:none}
+.acc-card:hover{transform:translateY(-2px);box-shadow:0 20px 35px rgba(20,22,38,.27)}
+.acc-card.is-active{outline:2px solid var(--accent);outline-offset:3px}
+.acc-card-head,.acc-card-foot{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.acc-card-head{font-size:12px;font-weight:700;opacity:.9}
+.acc-brand{max-width:45%;padding:4px 8px;border:1px solid rgba(255,255,255,.3);border-radius:99px;font-size:9px;text-align:center;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-card-number{position:relative;z-index:1;font-family:'Sora',sans-serif;font-size:17px;letter-spacing:.13em;opacity:.9}
+.acc-card-balance-label{position:relative;z-index:1;margin-bottom:-12px;font-size:10px;font-weight:600;opacity:.8}
+.acc-card-balance{position:relative;z-index:1;font-family:'Sora',sans-serif;font-size:25px;line-height:1.2;overflow-wrap:anywhere}
+.acc-card-foot{padding-top:9px;border-top:1px solid rgba(255,255,255,.25);font-size:11px;font-weight:700}
+.acc-card-foot span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account-pagination{display:flex;justify-content:center;align-items:center;gap:6px;min-height:20px;margin-top:8px}
+.account-page-dot{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:var(--border);cursor:pointer;transition:all .18s ease}
+.account-page-dot.active{width:22px;border-radius:5px;background:var(--accent)}
+.account-empty-state,.account-detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:280px;color:var(--text-muted);text-align:center}
+.account-empty-state span,.account-detail-empty span{font-size:36px}
+.account-empty-state strong,.account-detail-empty h3{margin:0;color:var(--text)}
+.account-empty-state small,.account-detail-empty p{max-width:270px;margin:0;font-size:12px}
+
+.account-detail-panel{display:flex;flex-direction:column;justify-content:center;gap:20px;border-left:3px solid var(--accent)}
+.account-detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.account-detail-header>div:first-child{min-width:0}
+.account-detail-header small{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
+.account-detail-header h3{margin:3px 0;font-size:18px;overflow-wrap:anywhere}
+.account-detail-header span{font-size:11px;color:var(--text-muted)}
+.account-detail-actions{display:flex;gap:6px;flex-shrink:0}
+.account-detail-actions .btn{padding:7px 10px;font-size:11px}
+.danger-text{color:var(--danger)!important}
+.account-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.account-metric{display:flex;flex-direction:column;gap:7px;min-width:0;padding:12px 10px;border-radius:11px;background:var(--bg)}
+.account-metric small{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted)}
+.account-metric strong{font-family:'Sora',sans-serif;font-size:14px;overflow-wrap:anywhere}
+.account-usage{display:flex;flex-direction:column;gap:7px}
+.account-usage>div:first-child{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted)}
+.account-usage>div:first-child strong{color:var(--text)}
+.account-usage-track{height:8px;overflow:hidden;border-radius:99px;background:var(--border)}
+.account-usage-track span{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .25s ease}
+.account-detail-foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:14px;padding-top:15px;border-top:1px solid var(--border)}
+.account-detail-foot>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.account-detail-foot small{font-size:10px;color:var(--text-muted)}
+.account-detail-foot strong{font-size:12px;overflow-wrap:anywhere}
+.account-primary-row{padding:12px;border:1px solid var(--border);border-radius:11px;background:var(--bg)}
+.account-primary-option{display:flex!important;align-items:center;gap:9px;margin:0!important;color:var(--text)!important;font-size:13px!important;cursor:pointer}
+.account-primary-option input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
+.account-primary-row small{display:block;margin:6px 0 0 25px;font-size:10px}
+
+@media(max-width:1180px){.account-detail-layout{grid-template-columns:1fr}.account-carousel,.account-detail-panel{min-height:0}.account-detail-panel{min-height:280px}}
+@media(max-width:700px){
+  .accounts-summarybar{align-items:flex-start;flex-direction:column}
+  .accounts-global-balance strong{font-size:21px}
+  .wallet-actions{width:100%}
+  .wallet-actions .btn{flex:1;min-width:0;padding:9px 10px;font-size:12px}
+  .accounts-quickfilters{margin-bottom:12px}
+  .account-carousel,.account-detail-panel{padding:15px}
+  .account-cards{padding-inline:42px}
+  .account-slide{flex-basis:min(390px,calc(100vw - 84px))}
+  .acc-card{height:210px;padding:18px}
+  .acc-card-balance{font-size:22px}
+  .account-detail-header{flex-direction:column}
+  .account-metric{padding:10px 8px}
+  .account-metric strong{font-size:12px}
+}

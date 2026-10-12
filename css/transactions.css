@@ -1,0 +1,13 @@
+/* ==========================================================================
+   transactions.css — Estilos específicos de la vista Transacciones
+   ========================================================================== */
+
+.table-search{
+  padding:8px 14px; border:1px solid var(--border); border-radius:10px; background: var(--card-bg);
+  color: var(--text); font-size:13.5px; min-width:200px;
+}
+.table-search:focus{ outline:none; border-color: var(--accent); }
+
+@media (max-width: 860px){
+  .table-search{ min-width:0; width:100%; }
+}

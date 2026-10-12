@@ -1,0 +1,184 @@
+/* ==========================================================================
+   dashboard.css — Estilos específicos del Dashboard
+   ========================================================================== */
+
+/* ---------- FILTROS DEL DASHBOARD ---------- */
+.dashboard-filters{ position:relative; }
+
+.dash-select{
+  border:none; background:transparent; color: var(--text); font-size:13.5px; font-weight:600;
+  padding:0 2px; cursor:pointer; appearance:none; -webkit-appearance:none;
+}
+.dash-select:focus{ outline:none; color: var(--accent-dark); }
+.dash-select option{ background: var(--card-bg); color: var(--text); }
+.dot-flow{background:var(--accent)}
+
+/* ---------- FILTRO DE CUENTAS (multiselección) ---------- */
+.account-filter{ position:relative; }
+.account-filter-btn{
+  display:flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid var(--border);
+  border-radius:10px; background: var(--card-bg); color: var(--text); font-size:13.5px; font-weight:500;
+  transition: border-color .15s ease, color .15s ease;
+}
+.account-filter-btn:hover{ border-color: var(--accent); color: var(--accent-dark); }
+.account-filter-btn svg{ width:16px; height:16px; color: var(--text-muted); }
+.account-filter-caret{ font-size:10px; color: var(--text-muted); margin-left:2px; }
+.account-filter.active .account-filter-btn{ background: var(--accent-soft); border-color: transparent; color: var(--accent-dark); }
+.account-filter.active .account-filter-btn svg{ color: var(--accent-dark); }
+
+.account-filter-list{
+  display:none; position:absolute; left:0; top:calc(100% + 6px); min-width:240px; max-height:320px; overflow-y:auto;
+  background: var(--card-bg); border:1px solid var(--border); border-radius:14px;
+  box-shadow: var(--shadow-pop); padding:8px; z-index:30;
+}
+.account-filter.open .account-filter-list{ display:block; }
+
+.account-filter-option{
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:9px;
+  font-size:13px; color: var(--text); cursor:pointer; user-select:none;
+  transition: background .12s ease;
+}
+.account-filter-option:hover{ background: var(--accent-soft); }
+.account-filter-option input{ accent-color: var(--accent); width:15px; height:15px; cursor:pointer; }
+.account-filter-option .acc-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.account-filter-option .acc-bal{ margin-left:auto; font-size:12px; color: var(--text-muted); }
+
+.account-filter-head{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:4px 10px 8px; font-size:11.5px; color: var(--text-muted); font-weight:600;
+  text-transform:uppercase; letter-spacing:.03em; border-bottom:1px solid var(--border); margin-bottom:6px;
+}
+.account-filter-head button{
+  border:none; background:none; color: var(--accent-dark); font-size:11.5px; font-weight:700; cursor:pointer;
+  text-transform:none; letter-spacing:0;
+}
+.account-filter-head button:hover{ text-decoration:underline; }
+
+/* Accesos rápidos para aplicar el filtro principal de cuentas con un toque. */
+.dashboard-account-quickfilters{display:flex;align-items:center;gap:8px;max-width:100%;margin:0 0 14px;padding:1px 0;overflow-x:auto;scrollbar-width:thin}
+.dashboard-account-quickfilters[hidden]{display:none}
+.dashboard-account-chip{flex:0 0 auto;padding:8px 14px;border:1px solid color-mix(in srgb,var(--account-chip-color,var(--accent)) 40%,var(--border));border-radius:999px;background:color-mix(in srgb,var(--account-chip-color,var(--accent)) 10%,var(--card-bg));color:var(--text-muted);font-size:12px;font-weight:650;cursor:pointer;transition:background .15s ease,border-color .15s ease,color .15s ease}
+.dashboard-account-chip:hover,.dashboard-account-chip.active{border-color:var(--account-chip-color,var(--accent));background:color-mix(in srgb,var(--account-chip-color,var(--accent)) 20%,var(--card-bg));color:var(--text)}
+
+/* ---------- MINI LISTA DE METAS EN DASHBOARD ---------- */
+.goal-mini-list{ display:flex; flex-direction:column; gap:14px; }
+.goal-mini-row{ display:flex; flex-direction:column; gap:6px; }
+.goal-mini-top{ display:flex; justify-content:space-between; font-size:13px; font-weight:600; }
+.goal-mini-top span{ font-weight:500; color: var(--text-muted); }
+
+/* ---------- ESTRUCTURA DE DOS COLUMNAS DEL DASHBOARD ---------- */
+/* Contiene la actividad principal y el resumen compacto; en móvil las columnas se apilan. */
+.dashboard-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,330px);gap:18px;align-items:start}
+/* Apila gráfico, tarjetas y transacciones en el espacio principal. */
+.dashboard-main-column{display:flex;flex-direction:column;gap:18px;min-width:0}
+/* Mantiene crédito, cuentas, presupuesto y metas en la barra lateral. */
+.dashboard-side-column{display:flex;flex-direction:column;gap:14px;min-width:0}
+/* Amplía el área del gráfico de flujo para mostrar el mes día por día. */
+.dashboard-flow-card .chart-box{height:285px}
+/* Evita que tablas y gráficas fuercen el ancho del layout. */
+.dashboard-main-column>.card,.dashboard-side-column>.card{min-width:0}
+
+/* ---------- RESUMEN DE LÍNEA DE CRÉDITO ---------- */
+/* Presenta la línea y uso de tarjetas agrupados por moneda. */
+.credit-global-widget{padding:17px 19px;border-color:var(--credit-alert-color,rgba(242,169,59,.45));}
+.credit-global-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.credit-global-heading h3{margin:0;font-size:15px}
+.credit-global-heading p{margin:4px 0 0}
+.credit-alert{display:inline-flex;align-items:center;justify-content:center;padding:4px 9px;border:1px solid rgba(124,92,252,.35);border-radius:99px;color:var(--accent-dark);font-size:9px;font-weight:800;letter-spacing:.05em;white-space:nowrap}
+.credit-alert.is-low{border-color:rgba(47,190,143,.35);color:var(--accent-2);background:rgba(47,190,143,.09)}
+.credit-alert.is-medium{border-color:rgba(242,169,59,.4);color:#C98200;background:rgba(242,169,59,.1)}
+.credit-alert.is-high{border-color:rgba(235,83,107,.4);color:#D84A63;background:rgba(235,83,107,.09)}
+.credit-alert.is-unconfigured{border-color:var(--border);color:var(--text-muted);background:var(--bg)}
+.credit-global-main{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:13px 0}
+.credit-global-main>div:first-child{display:flex;flex-direction:column;gap:6px;min-width:0}
+.credit-global-main>div:first-child strong{font-family:'Sora',sans-serif;font-size:25px;overflow-wrap:anywhere}
+.credit-global-main>div:first-child span{font-size:11px;color:var(--text-muted)}
+.credit-global-ring{display:grid;place-items:center;flex:0 0 72px;width:72px;height:72px;border-radius:50%;background:conic-gradient(var(--credit-usage-color,var(--accent-2)) var(--credit-used),var(--border) 0);position:relative}
+.credit-global-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--card-bg)}
+.credit-global-ring span{position:relative;font-size:12px;font-weight:800}
+.credit-global-totals{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:12px;background:var(--bg)}
+.credit-currency-group{display:grid;grid-template-columns:36px repeat(3,minmax(0,1fr));gap:7px;align-items:center}
+.credit-currency-group>strong{font-size:11px}
+.credit-currency-group>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.credit-global-totals small{font-size:8px;font-weight:700;color:var(--text-muted)}
+.credit-global-totals b{font-size:11px;overflow-wrap:anywhere}
+.credit-currency-status{grid-column:2/-1;display:grid!important;grid-template-columns:max-content minmax(0,1fr);align-items:center;gap:7px!important}
+.credit-currency-status small{color:var(--credit-usage-color,var(--text-muted))}
+.credit-mini-track{height:5px;overflow:hidden;border-radius:99px;background:var(--border)}
+.credit-mini-track i{display:block;height:100%;border-radius:inherit;background:var(--credit-usage-color,var(--accent-2))}
+/* ---------- TARJETAS Y DETALLE DE CRÉDITO ---------- */
+/* Distribuye el carrusel y el panel con la tarjeta activa. */
+.dashboard-credit-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.9fr);gap:18px;margin:18px 0}
+.dashboard-credit-carousel,.dashboard-credit-detail{min-width:0;min-height:340px;padding:20px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-card)}
+.dashboard-credit-carousel{background:var(--bg);display:flex;flex-direction:column}
+.dashboard-credit-carousel .card-head{align-items:flex-start;margin-bottom:14px}
+.dashboard-credit-carousel .card-head h3{margin:0}
+.dashboard-credit-carousel .card-head p{margin:4px 0 0}
+.dashboard-credit-carousel .account-carousel-controls button{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;background:var(--card-bg);color:var(--text);font-size:23px;line-height:1;cursor:pointer}
+.dashboard-credit-carousel .account-carousel-controls button:disabled{opacity:.4;cursor:default}
+.dashboard-credit-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:230px;max-width:390px;width:100%;margin:auto;padding:22px;border-radius:20px;overflow:hidden;background:var(--account-card-bg);color:#fff;box-shadow:0 16px 32px rgba(20,22,38,.22)}
+.dashboard-credit-card::after{content:'';position:absolute;width:220px;height:220px;right:-60px;top:-125px;border-radius:50%;background:rgba(255,255,255,.12)}
+.dashboard-credit-card-top,.dashboard-credit-card-bottom{position:relative;z-index:1;display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700}
+.dashboard-credit-card-top span:first-child,.dashboard-credit-card-bottom span{max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-credit-card-top span:last-child{font-size:10px;text-transform:uppercase;opacity:.82}
+.dashboard-credit-card-number{position:relative;z-index:1;font-family:'Sora',sans-serif;font-size:15px;letter-spacing:.13em}
+.dashboard-credit-card>strong{position:relative;z-index:1;font-family:'Sora',sans-serif;font-size:17px;overflow-wrap:anywhere}
+.dashboard-credit-card-bottom{padding-top:11px;border-top:1px solid rgba(255,255,255,.28);font-size:10px;text-transform:uppercase;opacity:.85}
+.dashboard-credit-carousel .account-pagination{margin-top:13px}
+.dashboard-credit-detail{display:flex;flex-direction:column;gap:14px;border-left:3px solid var(--accent)}
+.dashboard-credit-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.dashboard-credit-detail-head h3{margin:0;font-size:17px;overflow-wrap:anywhere}
+.dashboard-credit-detail-head span:not(.credit-alert){display:block;margin-top:4px;color:var(--text-muted);font-size:11px}
+.dashboard-credit-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:11px;border-radius:12px;background:var(--bg)}
+.dashboard-credit-metrics>div{display:flex;flex-direction:column;gap:5px;min-width:0;text-align:center}
+.dashboard-credit-metrics small,.dashboard-credit-month small{font-size:9px;font-weight:700;color:var(--text-muted)}
+.dashboard-credit-metrics strong{font-family:'Sora',sans-serif;font-size:12px;overflow-wrap:anywhere}
+.dashboard-credit-detail .account-usage{gap:6px}
+.dashboard-credit-detail .account-usage-track span{background:var(--credit-usage-color,var(--accent-2))}
+.dashboard-credit-month{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.dashboard-credit-month>div{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.dashboard-credit-month strong{font-family:'Sora',sans-serif;font-size:12px;overflow-wrap:anywhere}
+.dashboard-credit-month span{font-size:9px;color:var(--text-muted)}
+.dashboard-credit-history-label{font-size:10px;font-weight:700;color:var(--text-muted);letter-spacing:.03em}
+.dashboard-credit-history{height:70px;min-height:70px;position:relative}
+.dashboard-credit-more{display:block;margin-top:auto;padding:10px;border:1px solid var(--border);border-radius:99px;text-align:center;color:var(--text);font-size:12px}
+.dashboard-credit-more:hover{border-color:var(--accent);color:var(--accent-dark)}
+.dashboard-credit-empty{display:flex;flex:1;min-height:210px;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:var(--text-muted);text-align:center}
+.dashboard-credit-empty>span{font-size:34px}
+.dashboard-credit-empty strong{color:var(--text)}
+.dashboard-credit-empty small{max-width:260px;font-size:11px}
+
+/* ---------- CUENTAS, PRESUPUESTO Y METAS DEL LATERAL ---------- */
+/* Filas enlazadas a Cuentas que muestran el saldo de cada cuenta no crediticia. */
+.dashboard-accounts-widget{padding:16px}
+.dashboard-accounts-widget .card-head{margin-bottom:10px}
+.dashboard-accounts-widget .card-head h3{margin:0;font-size:15px}
+.dashboard-accounts-widget .card-head p{margin:3px 0 0}
+.dashboard-account-list{display:flex;flex-direction:column;gap:7px}
+.dashboard-account-item{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:9px;border:1px solid var(--border);border-radius:11px;color:var(--text);text-decoration:none;transition:border-color .15s ease,background .15s ease}
+.dashboard-account-item:hover{border-color:var(--accent);background:var(--accent-soft);text-decoration:none}
+.dashboard-account-icon{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:var(--account-item-bg,var(--accent-soft));color:#fff;font-size:11px;font-weight:800}
+.dashboard-account-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dashboard-account-copy strong,.dashboard-account-copy small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-account-copy strong{font-size:11px}
+.dashboard-account-copy small{font-size:9px;color:var(--text-muted)}
+.dashboard-account-balance{font-size:10px;font-weight:800;text-align:right;white-space:nowrap}
+.dashboard-accounts-empty{margin:4px 0}
+/* Reduce el relleno de los módulos que comparten el panel lateral. */
+.dashboard-budget-widget,.dashboard-goals-widget{padding:16px}
+.dashboard-budget-widget .donut-wrap{height:190px}
+.dashboard-fixed-payment{width:100%;margin-top:8px}
+.dashboard-goals-widget .goal-mini-top{gap:10px;font-size:11px}
+.dashboard-goals-widget .goal-mini-top span{font-size:10px;text-align:right}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1100px){
+  .account-filter-list{ min-width:200px; }
+  .dashboard-columns{grid-template-columns:1fr}
+  .dashboard-side-column{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .credit-global-widget,.dashboard-accounts-widget{grid-column:1/-1}
+  .dashboard-credit-layout{grid-template-columns:1fr}
+  .dashboard-credit-carousel,.dashboard-credit-detail{min-height:0}
+}
+@media(max-width:520px){.dashboard-credit-carousel,.dashboard-credit-detail{padding:15px}.dashboard-credit-card{min-height:205px;padding:18px}.dashboard-credit-metrics{padding:9px 6px}.dashboard-credit-metrics strong{font-size:10px}.credit-global-main>div:first-child strong{font-size:21px}}
+@media(max-width:560px){.dashboard-side-column{grid-template-columns:1fr}.credit-global-widget,.dashboard-accounts-widget{grid-column:auto}.dashboard-flow-card .chart-box{height:240px}.dashboard-account-item{grid-template-columns:27px minmax(0,1fr) auto}}

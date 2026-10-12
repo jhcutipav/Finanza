@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinSet · Finanzas personales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/transactions.css">
+<link rel="stylesheet" href="css/accounts.css">
+<link rel="stylesheet" href="css/goals.css">
+<link rel="stylesheet" href="css/budget.css">
+<link rel="stylesheet" href="css/debts.css">
+<link rel="stylesheet" href="css/analytics.css">
+<link rel="stylesheet" href="css/reports.css">
+<link rel="stylesheet" href="css/settings.css">
+<link rel="stylesheet" href="css/notifications.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <span class="brand-mark">F</span>
+        <span class="brand-name">FinSet</span>
+      </div>
+      <button class="collapse-btn" id="collapseBtn" title="Contraer menú" aria-label="Contraer menú">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <nav class="nav-main">
+      <button class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="5" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="12" width="7" height="9" rx="2" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="16" width="7" height="5" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="transactions">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/><path d="M7 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Transacciones</span>
+      </button>
+      <button class="nav-item" data-view="accounts">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="7" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="14" r="1.4" fill="currentColor"/></svg>
+        <span>Cuentas</span>
+      </button>
+      <button class="nav-item" data-view="budget">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10M12 20V4M20 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Presupuesto</span>
+      </button>
+      <button class="nav-item" data-view="goals">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>
+        <span>Metas</span>
+      </button>
+      <button class="nav-item" data-view="debts">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 6.5c0-1.9-2.2-3.5-5-3.5s-5 1.6-5 3.5S9.2 10 12 10s5 1.6 5 3.5-2.2 3.5-5 3.5-5-1.6-5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Deudas</span>
+      </button>
+      <button class="nav-item" data-view="analytics">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V6M10 19V10M16 19V4M22 19H2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Analítica</span>
+      </button>
+      <button class="nav-item" data-view="reports">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>Reportes</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span>Configuración</span>
+      </button>
+      <button class="nav-item" data-view="notifications">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Notificación</span>
+      </button>
+    </nav>
+
+    <div class="nav-bottom">
+      <button class="nav-item" id="helpBtn">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.2a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1.4.9-1.4 1.8v.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+        <span>Ayuda</span>
+      </button>
+      <button class="nav-item" id="logoutBtn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Cerrar sesión</span>
+      </button>
+      <div class="theme-toggle">
+        <button id="lightBtn" class="theme-btn active" aria-label="Tema claro">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.55 1.55M17.55 17.55l1.55 1.55M2 12h2.2M19.8 12H22M4.9 19.1l1.55-1.55M17.55 6.45l1.55-1.55" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button id="darkBtn" class="theme-btn" aria-label="Tema oscuro">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="page-title">
+        <h1 id="pageTitle">Dashboard</h1>
+        <p id="pageSubtitle">Resumen de tu actividad</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="searchBtn" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn" id="notifBtn" aria-label="Notificaciones">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span class="badge" id="notifBadge">3</span>
+        </button>
+        <div class="user-chip">
+          <div class="avatar" id="userAvatar">AV</div>
+          <div class="user-meta">
+            <strong id="userName">Adriana Vives</strong>
+            <small id="userEmail">adriana.vives@correo.com</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="view-scroll" id="viewScroll">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section class="view active" id="view-dashboard">
+        <div class="view-row view-row-top dashboard-filters">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <select id="dashMonth" class="dash-select"></select>
+            <select id="dashYear" class="dash-select"></select>
+          </div>
+          <div class="account-filter" id="accountFilter">
+            <button class="account-filter-btn" id="accountFilterBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H18a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="7" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/></svg>
+              <span id="accountFilterLabel">Todas las cuentas</span>
+              <span class="account-filter-caret">▾</span>
+            </button>
+        <div class="account-filter-list" id="accountFilterList"></div>
+      </div>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="manageWidgetsBtn">Administrar widgets</button>
+          <button class="btn btn-primary" id="addTransactionBtn">+ Agregar Transacción</button>
+        </div>
+
+        <nav class="dashboard-account-quickfilters" id="dashboardAccountQuickFilters" aria-label="Filtrar el Dashboard por cuenta"></nav>
+        <div class="stat-grid" id="statGrid"></div>
+
+        <!-- Layout principal: contenido financiero a la izquierda y resumen compacto a la derecha. -->
+        <div class="dashboard-columns">
+          <div class="dashboard-main-column">
+            <div class="card dashboard-flow-card">
+              <div class="card-head">
+                <h3>Flujo de dinero</h3>
+                <div class="legend">
+                  <span class="dot dot-dark"></span> Ingresos
+                  <span class="dot dot-light"></span> Egresos
+                  <span class="dot dot-flow"></span> Neto diario
+                </div>
+              </div>
+              <div class="chart-box"><canvas id="moneyFlowChart"></canvas></div>
+            </div>
+
+            <!-- Carrusel de tarjetas de crédito con el detalle de la seleccionada. -->
+            <section class="dashboard-credit-layout" aria-label="Información de tarjetas de crédito">
+              <div class="card dashboard-credit-carousel">
+                <div class="card-head">
+                  <div><h3>Mis tarjetas de crédito</h3><p class="muted small">Avanza cada 10 segundos · pausa al interactuar</p></div>
+                  <div class="account-carousel-controls">
+                    <button type="button" id="dashCreditPrev" aria-label="Tarjeta anterior">‹</button>
+                    <button type="button" id="dashCreditNext" aria-label="Tarjeta siguiente">›</button>
+                  </div>
+                </div>
+                <div id="dashCreditCardStage"></div>
+                <div class="account-pagination" id="dashCreditPagination"></div>
+              </div>
+              <div class="card dashboard-credit-detail" id="dashCreditDetail"></div>
+            </section>
+
+            <div class="card dashboard-recent-card">
+              <div class="card-head">
+                <h3>Transacciones recientes</h3>
+                <a href="#" class="link-btn" data-goto="transactions">Ver todo</a>
+              </div>
+              <div class="table-wrap">
+                <table class="mini-table" id="recentTxTable"><tbody></tbody></table>
+              </div>
+            </div>
+          </div>
+
+          <aside class="dashboard-side-column" aria-label="Resumen de cuentas y planificación">
+            <div class="card credit-global-widget" id="creditGlobalWidget"></div>
+            <div class="card dashboard-accounts-widget">
+              <div class="card-head"><div><h3>Mis cuentas</h3><p class="muted small" id="dashboardAccountCount">Cuentas activas</p></div></div>
+              <div class="dashboard-account-list" id="dashboardAccountsList"></div>
+            </div>
+            <div class="card dashboard-budget-widget">
+              <div class="card-head">
+                <h3>Presupuesto</h3>
+                <span class="muted"><span id="budgetRemaining">0</span> restante</span>
+              </div>
+              <div class="donut-wrap">
+                <canvas id="budgetDonut" height="180"></canvas>
+                <div class="donut-center">
+                  <strong id="budgetSpentThisMonth">$0</strong>
+                  <small>registrado de <span id="budgetTotalThisMonth">$0</span></small>
+                </div>
+              </div>
+              <button type="button" class="btn btn-ghost dashboard-fixed-payment" id="dashFixedCommitmentBtn">Registrar pago o aporte</button>
+            </div>
+            <div class="card dashboard-goals-widget">
+              <div class="card-head">
+                <h3>Metas de ahorro</h3>
+                <a href="#" class="link-btn" data-goto="goals">Ver todo</a>
+              </div>
+              <div class="goal-mini-list" id="goalMiniList"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ================= TRANSACTIONS ================= -->
+      <section class="view" id="view-transactions">
+        <div class="view-row view-row-top">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span>01 Jun - 01 Jul 2024</span>
+          </div>
+          <div class="filter-chip" id="filterBtn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <input class="table-search" id="txSearch" type="text" placeholder="Buscar transacción...">
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="exportCsvBtn">Exportar CSV</button>
+          <button class="btn btn-primary" id="addTxBtn">+ Agregar Nueva Transacción</button>
+        </div>
+
+        <div class="card table-card">
+          <div class="table-card-head">
+            <span id="txCount">0 elementos</span>
+          </div>
+          <div class="table-wrap">
+            <table class="full-table" id="txTable">
+              <thead>
+                <tr>
+                  <th data-sort="date">Fecha ⇅</th>
+                  <th data-sort="amount">Monto ⇅</th>
+                  <th>Nombre del pago</th>
+                  <th>Método</th>
+                  <th>Categoría</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ACCOUNTS ================= -->
+      <section class="view" id="view-accounts">
+        <div class="accounts-summarybar card">
+          <div class="accounts-global-balance"><span class="muted small">Saldo neto global</span><strong id="walletTotalBalance">$0.00</strong><small class="muted" id="walletSourcesLabel">Saldo total por moneda</small></div>
+          <div class="wallet-actions">
+            <button class="btn btn-primary" id="transferBtn">Transferir</button>
+            <button class="btn btn-ghost" id="requestBtn">Solicitar</button>
+            <button class="btn btn-icon" id="addAccountBtn" title="Agregar cuenta">+ Cuenta</button>
+          </div>
+        </div>
+
+        <div class="accounts-quickfilters" id="accountsQuickFilters" aria-label="Seleccionar cuenta"></div>
+
+        <div class="account-detail-layout">
+          <div class="account-carousel card">
+            <div class="card-head"><div><h3>Mis cuentas</h3><p class="muted small">Desliza o usa las flechas · avanza cada 10 segundos</p></div>
+              <div class="account-carousel-controls"><button type="button" id="accountPrevBtn" aria-label="Cuenta anterior">‹</button><button type="button" id="accountNextBtn" aria-label="Cuenta siguiente">›</button></div>
+            </div>
+            <div class="account-carousel-viewport" id="accountCarouselViewport">
+              <div class="account-cards" id="accountCards"></div>
+            </div>
+            <div class="account-pagination" id="accountPagination"></div>
+          </div>
+          <div class="account-detail-panel card" id="accountDetailPanel"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3 id="walletFlowTitle">Evolución del saldo · últimos 30 días</h3>
+            </div>
+            <div class="chart-box"><canvas id="walletFlowChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Gastos de esta cuenta</h3>
+            </div>
+            <div class="donut-wrap">
+              <canvas id="walletDonut" height="180"></canvas>
+              <div class="donut-center">
+                <strong id="walletDonutTotal">$0</strong>
+                <small>Gasto del mes</small>
+              </div>
+            </div>
+            <div class="legend-list" id="walletLegendList"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Transacciones recientes</h3>
+            <a href="#" class="link-btn" data-goto="transactions">Ver todo</a>
+          </div>
+          <div class="table-wrap">
+            <table class="mini-table" id="walletRecentTable"><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= GOALS ================= -->
+      <section class="view" id="view-goals">
+        <div class="view-row view-row-top">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span>Este año</span>
+          </div>
+          <div class="filter-chip active" id="goalFilterProgress">En progreso <span class="chip-x">×</span></div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" id="addGoalBtn">+ Agregar meta</button>
+        </div>
+
+        <div class="goal-count" id="goalCount">0 elementos</div>
+        <div class="goal-grid" id="goalGrid"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3>Total de metas</h3>
+              <span class="muted">Este año</span>
+            </div>
+            <div class="big-number" id="totalGoalsCount">0</div>
+            <div class="goal-status-pills" id="goalStatusPills"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3>Resumen de ahorros</h3>
+            </div>
+            <div class="chart-box"><canvas id="savingsChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= BUDGET ================= -->
+      <section class="view" id="view-budget">
+        <div class="view-row view-row-top">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span>Este mes</span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" id="addBudgetBtn">+ Agregar presupuesto</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3>Presupuesto total</h3>
+              <span class="muted"><span id="budgetUsedPct">0</span>% usado</span>
+            </div>
+            <div class="big-balance" id="budgetTotalAmount">$0.00</div>
+            <div class="progress-bar big"><div class="progress-fill" id="budgetTotalFill"></div></div>
+            <p class="muted small"><span id="budgetTotalSpent">$0</span> registrado de <span id="budgetTotalPlanned">$0</span> planificado</p>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Distribución</h3></div>
+            <div class="donut-wrap">
+              <canvas id="budgetOverviewDonut" height="180"></canvas>
+              <div class="donut-center">
+                <strong id="budgetOverviewTotal">$0</strong>
+                <small>presupuestado</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Presupuesto por categoría</h3></div>
+          <div class="budget-list" id="budgetList"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div><h3>Compromisos mensuales</h3><p class="muted small">Incluye gastos fijos, aportes a metas y cuotas de deuda. Al pagarlos se registra el movimiento correspondiente.</p></div>
+            <button class="btn btn-ghost" id="addFixedExpenseBtn">+ Agregar gasto fijo</button>
+          </div>
+          <div class="budget-list" id="fixedExpenseList"></div>
+        </div>
+      </section>
+
+      <!-- ================= DEBTS ================= -->
+      <section class="view" id="view-debts">
+        <div class="view-row view-row-top">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span>Vista general</span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" id="addDebtBtn">+ Agregar deuda</button>
+        </div>
+
+        <div class="stat-grid" id="debtsStatGrid"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head"><h3>Saldo pendiente por deuda</h3></div>
+            <div class="chart-box"><canvas id="debtsBalanceChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Distribución por tipo</h3></div>
+            <div class="donut-wrap">
+              <canvas id="debtsDonut" height="180"></canvas>
+              <div class="donut-center">
+                <strong id="debtsDonutTotal">$0</strong>
+                <small>total adeudado</small>
+              </div>
+            </div>
+            <div class="legend-list" id="debtsLegendList"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Mis deudas</h3></div>
+          <div class="debt-list" id="debtList"></div>
+        </div>
+      </section>
+
+      <!-- ================= ANALYTICS ================= -->
+      <section class="view" id="view-analytics">
+        <div class="view-row view-row-top">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <span>Este mes</span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="analyticsExportBtn">Exportar CSV</button>
+        </div>
+
+        <div class="stat-grid" id="analyticsStatGrid"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h3>Resumen del saldo total</h3>
+            </div>
+            <div class="chart-box"><canvas id="balanceOverviewChart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Estadísticas</h3></div>
+            <div class="donut-wrap">
+              <canvas id="analyticsDonut" height="180"></canvas>
+              <div class="donut-center">
+                <strong id="analyticsDonutTotal">$0</strong>
+                <small>Gasto del mes</small>
+              </div>
+            </div>
+            <div class="legend-list" id="analyticsLegendList"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Comparación de presupuesto y gasto</h3></div>
+          <div class="chart-box"><canvas id="budgetVsExpenseChart"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ================= REPORTS ================= -->
+      <section class="view" id="view-reports">
+        <div class="view-row view-row-top">
+          <div class="range-picker">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <select id="reportMonth" class="dash-select"></select>
+            <select id="reportYear" class="dash-select"></select>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="exportReportCsvBtn">Exportar CSV</button>
+        </div>
+
+        <div class="report-cards" id="reportCards"></div>
+
+        <div class="card">
+          <div class="card-head"><h3>Histórico últimos 6 meses</h3></div>
+          <div class="table-wrap">
+            <table class="full-table" id="reportsHistoryTable">
+              <thead>
+                <tr>
+                  <th>Mes</th>
+                  <th>Ingresos</th>
+                  <th>Gastos</th>
+                  <th>Balance</th>
+                  <th>% Ahorro</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Ingresos recibidos en cuentas de débito</h3></div>
+          <p class="muted small">Agrupados por banco y cuenta para el mes seleccionado.</p>
+          <div class="table-wrap">
+            <table class="full-table" id="debitIncomeReportTable">
+              <thead><tr><th>Banco</th><th>Cuenta</th><th>Ingresos</th><th>Total</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Tendencia de los últimos 6 meses</h3></div>
+          <div class="chart-box"><canvas id="reportsTrendChart"></canvas></div>
+        </div>
+      </section>
+
+      <!-- ================= SETTINGS ================= -->
+      <section class="view" id="view-settings">
+        <div class="settings-grid">
+          <div class="card">
+            <div class="card-head"><h3>Perfil</h3></div>
+            <div class="settings-profile">
+              <div class="avatar avatar-lg" id="settingsAvatar">AV</div>
+              <div class="form-row">
+                <label>Nombre completo</label>
+                <input type="text" id="settingsName" value="Adriana Vives">
+              </div>
+              <div class="form-row">
+                <label>Correo electrónico</label>
+                <input type="email" id="settingsEmail" value="adriana.vives@correo.com">
+              </div>
+              <button class="btn btn-primary" id="saveProfileBtn">Guardar cambios</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Preferencias</h3></div>
+            <div class="pref-row">
+              <div>
+                <strong>Moneda principal</strong>
+                <p class="muted small">Se usará en todos los montos</p>
+              </div>
+              <select id="settingsCurrency"></select>
+            </div>
+            <div class="pref-row">
+              <div>
+                <strong>Apariencia</strong>
+                <p class="muted small">Elige entre modo claro y oscuro</p>
+              </div>
+              <div class="theme-toggle inline">
+                <button id="lightBtn2" class="theme-btn active">Claro</button>
+                <button id="darkBtn2" class="theme-btn">Oscuro</button>
+              </div>
+            </div>
+            <div class="pref-row">
+              <div>
+                <strong>Notificaciones</strong>
+                <p class="muted small">Alertas de presupuesto y metas</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="settingsNotifToggle" checked>
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>Datos</h3></div>
+            <p class="muted small">Tu información se guarda solo en este navegador.</p>
+            <div class="danger-actions">
+              <button class="btn btn-ghost" id="resetDataBtn">Restablecer datos de ejemplo</button>
+              <button class="btn btn-danger" id="wipeDataBtn">Borrar todos los datos</button>
+            </div>
+          </div>
+
+          <div class="card catalog-card">
+            <div class="card-head"><div><h3>Catálogos</h3><p class="muted small">Opciones de la aplicación guardadas en Google Sheets</p></div>
+              <button class="btn btn-primary" id="addCatalogBtn">+ Agregar opción</button></div>
+            <div class="catalog-toolbar"><label for="catalogFilter">Grupo</label><select id="catalogFilter"></select></div>
+            <div id="catalogList" class="catalog-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= NOTIFICATIONS ================= -->
+      <section class="view" id="view-notifications">
+        <div class="view-row view-row-top">
+          <div class="filter-chip active" data-notif-filter="all">Todas</div>
+          <div class="filter-chip" data-notif-filter="unread">No leídas</div>
+          <div class="filter-chip" data-notif-filter="important">Importantes</div>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost" id="markAllReadBtn">Marcar todas como leídas</button>
+        </div>
+
+        <div class="notif-list" id="notifList"></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== MODAL: Catálogo ===== -->
+<div class="modal" id="catalogModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><h3 id="catalogModalTitle">Agregar opción</h3><p class="muted small">Esta opción se guardará en la pestaña Catalogos</p></div>
+      <button class="modal-close" data-close-modal="catalogModal">✕</button></div>
+    <form id="catalogForm">
+      <input type="hidden" id="catalogId">
+      <div class="form-row"><label>Grupo</label><select id="catalogGroup" required></select></div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>Código interno</label><input id="catalogCode" required maxlength="40" placeholder="Ej. transporte"></div>
+        <div class="form-row"><label>Nombre visible</label><input id="catalogName" required placeholder="Ej. Transporte"></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row" id="catalogNatureRow"><label>Naturaleza de cuenta</label><select id="catalogNature"><option value="activo">Activo (suma al saldo global)</option><option value="pasivo">Pasivo (resta al saldo global)</option></select></div>
+        <div class="form-row" id="catalogMovementRow"><label>Disponible para</label><select id="catalogMovement"><option value="income">Ingreso</option><option value="expense">Egreso</option><option value="ambos">Ambos</option></select></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row catalog-icon-field">
+          <label>Icono</label>
+          <input type="hidden" id="catalogIcon">
+          <details id="catalogIconDropdown" class="catalog-icon-dropdown">
+            <summary><span id="catalogIconPreview">🏷️</span><span id="catalogIconName">Seleccionar icono</span><span class="catalog-icon-caret">▾</span></summary>
+            <div class="catalog-icon-panel">
+              <input type="search" id="catalogIconSearch" placeholder="Buscar: comida, casa, salud…" autocomplete="off">
+              <div id="catalogIconPicker" class="catalog-icon-picker" role="listbox" aria-label="Iconos disponibles"></div>
+            </div>
+          </details>
+        </div>
+        <div class="form-row"><label>Color (opcional)</label><input id="catalogColor" type="color" value="#8B899C"></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row" id="catalogSymbolRow"><label>Símbolo de moneda</label><input id="catalogSymbol" maxlength="8" placeholder="S/ "></div>
+        <div class="form-row"><label>Orden</label><input id="catalogOrder" type="number" value="100"></div>
+      </div>
+      <label class="catalog-active"><input id="catalogActive" type="checkbox" checked> Opción activa</label>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" data-close-modal="catalogModal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: Add / Edit Transaction ===== -->
+<div class="modal" id="txModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="txModalTitle">Agregar nueva transacción</h3>
+        <p class="muted small">Completa el formulario a continuación</p>
+      </div>
+      <button class="modal-close" data-close-modal="txModal">✕</button>
+    </div>
+    <form id="txForm">
+      <input type="hidden" id="txId">
+      <!-- Tipo principal: determina qué subtipos se mostrarán -->
+            <!-- El tipo determina los subtipos disponibles -->
+      <div class="form-row">
+        <label>Tipo</label>
+        <select id="txType"></select>
+      </div>
+
+      <div class="form-row">
+        <label>Subtipo</label>
+        <select id="txCategory" required></select>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label id="txAmountLabel">Monto</label>
+          <input type="number" step="0.01" min="0.01" id="txAmount" required>
+        </div>
+        <div class="form-row">
+          <label>Moneda de origen</label>
+          <select id="txCurrency"></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Descripción</label>
+        <input type="text" id="txName" placeholder="¿Qué es este movimiento?" required>
+      </div>
+
+      <div class="form-row">
+        <label>Método de pago</label>
+        <select id="txMethod" required></select>
+      </div>
+
+      <div class="form-row">
+        <label>Cuenta de origen</label>
+        <select id="txAccount" required></select>
+      </div>
+
+      <!-- Aparece únicamente para Egreso > Transferencia -->
+      <div id="transferFields" hidden>
+        <div class="form-row">
+          <label>Tipo de transferencia</label>
+          <select id="txTransferType">
+          </select>
+        </div>
+
+        <!-- Cuenta destino: solo en transferencia interna -->
+        <div class="form-row" id="destinationAccountRow" hidden>
+          <label>Cuenta destino</label>
+          <select id="txDestinationAccount"></select>
+        </div>
+
+        <div class="form-row">
+          <label>Comisión</label>
+          <input type="number" step="0.01" min="0" id="txCommission" value="0">
+        </div>
+
+        <!-- Externa: indica si pagas tú o quien recibe -->
+        <div class="form-row" id="commissionPayerRow" hidden>
+          <label>¿Quién paga la comisión?</label>
+          <select id="txCommissionPayer">
+          </select>
+        </div>
+
+        <!-- Se usa al comprar dólares desde una cuenta en soles -->
+        <div id="exchangeFields" hidden>
+          <div class="form-row">
+            <label>Dólares que quiero recibir</label>
+            <input type="number" step="0.01" min="0.01" id="txDestinationAmount">
+          </div>
+          <div class="form-row">
+            <label>Tipo de cambio: soles por dólar</label>
+            <input type="number" step="0.0001" min="0.0001" id="txExchangeRate">
+          </div>
+        </div>
+      </div>
+
+      <!-- La fecha es necesaria; el estado se guardará automáticamente -->
+      <div class="form-row">
+        <label>Fecha</label>
+        <input type="date" id="txDate" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="txModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: Add / Edit Goal ===== -->
+<div class="modal" id="goalModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="goalModalTitle">Agregar nueva meta</h3>
+        <p class="muted small">Define tu próximo objetivo de ahorro</p>
+      </div>
+      <button class="modal-close" data-close-modal="goalModal">✕</button>
+    </div>
+    <form id="goalForm">
+      <input type="hidden" id="goalId">
+      <div class="form-row">
+        <label>Nombre de la meta</label>
+        <input type="text" id="goalName" placeholder="Ej. MacBook Pro" required>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Monto objetivo</label>
+          <input type="number" step="0.01" min="0" id="goalTarget" placeholder="$0.00" required>
+        </div>
+        <div class="form-row">
+          <label>Monto ahorrado</label>
+          <input type="number" step="0.01" min="0" id="goalSaved" placeholder="$0.00" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Fecha límite</label>
+        <input type="date" id="goalDue" required>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>Cuenta de ahorro destino</label><select id="goalAccount"></select></div>
+        <div class="form-row"><label>Aporte mensual planificado</label><input type="number" min="0" step="0.01" id="goalMonthlyContribution" placeholder="Opcional"></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="goalModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar meta</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="goalContributionModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><h3 id="goalContributionTitle">Aportar a meta</h3><p class="muted small" id="goalContributionTarget"></p></div><button class="modal-close" data-close-modal="goalContributionModal">✕</button></div>
+    <form id="goalContributionForm">
+      <input type="hidden" id="goalContributionId">
+      <div class="form-row"><label>Cuenta de origen</label><select id="goalContributionSource" required></select></div>
+      <div class="form-row"><label>Monto del aporte</label><input type="number" id="goalContributionAmount" min="0.01" step="0.01" required></div>
+      <p class="muted small">El aporte se transferirá a la cuenta de ahorro de la meta y actualizará el monto ahorrado.</p>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" data-close-modal="goalContributionModal">Cancelar</button><button type="submit" class="btn btn-primary">Registrar aporte</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: Add Account ===== -->
+<div class="modal" id="accountModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3>Agregar nueva cuenta</h3>
+        <p class="muted small">Añade una tarjeta o billetera</p>
+      </div>
+      <button class="modal-close" data-close-modal="accountModal">✕</button>
+    </div>
+    <form id="accountForm">
+      <input type="hidden" id="accId">
+      <div class="form-row">
+        <label>Nombre de la cuenta</label>
+        <input type="text" id="accName" placeholder="Ej. Interbank Débito" required>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Banco (referencia)</label>
+          <input type="text" id="accBank" placeholder="Ej. Interbank">
+        </div>
+        <div class="form-row">
+          <label>Clase de cuenta</label>
+          <select id="accKind"></select>
+        </div>
+      </div>
+      <div class="form-row account-color-row">
+        <label for="accColor">Color para identificar la cuenta</label>
+        <div class="account-color-control"><input type="color" id="accColor" value="#7457f7"><small class="muted">Se muestra en la tarjeta y en las etiquetas de cuentas.</small></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label id="accBalanceLabel">Saldo inicial</label>
+          <input type="number" step="0.01" id="accBalance" placeholder="$0.00">
+        </div>
+        <div class="form-row">
+          <label>Tipo</label>
+          <select id="accType"></select>
+        </div>
+        <div class="form-row">
+          <label>Moneda</label>
+          <select id="accCurrency"></select>
+        </div>
+      </div>
+      <div class="form-row" id="accCreditLimitRow" hidden>
+        <label for="accCreditLimit">Línea de crédito total</label>
+        <input type="number" min="0" step="0.01" id="accCreditLimit" placeholder="Ej. 10,000.00">
+        <small class="muted">Es el límite aprobado por el banco; la deuda actual se registra por separado.</small>
+      </div>
+      <div class="form-row" id="accClosingDayRow" hidden>
+        <label for="accClosingDay">Día de corte mensual (opcional)</label>
+        <input type="number" min="1" max="31" step="1" id="accClosingDay" placeholder="Ej. 18">
+      </div>
+      <div class="form-row" id="accPaymentDayRow" hidden>
+        <label for="accPaymentDay">Día de pago mensual (opcional)</label>
+        <input type="number" min="1" max="31" step="1" id="accPaymentDay" placeholder="Ej. 13">
+      </div>
+      <div class="form-row account-primary-row" id="accPrimaryRow">
+        <label class="account-primary-option"><input type="checkbox" id="accIsPrimary"><span>Usar como cuenta principal del Dashboard</span></label>
+        <small class="muted">Se seleccionará por defecto al abrir el Dashboard. Solo aplica a cuentas que no son de crédito.</small>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="accountModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Agregar cuenta</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: Transfer ===== -->
+<div class="modal" id="transferModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3>Transferir dinero</h3>
+        <p class="muted small">Entre tus cuentas</p>
+      </div>
+      <button class="modal-close" data-close-modal="transferModal">✕</button>
+    </div>
+    <form id="transferForm">
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Desde</label>
+          <select id="transferFrom"></select>
+        </div>
+        <div class="form-row">
+          <label>Hacia</label>
+          <select id="transferTo"></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Monto</label>
+        <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="$0.00" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="transferModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Transferir</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: Budget ===== -->
+<div class="modal" id="budgetModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="budgetModalTitle">Agregar presupuesto</h3>
+        <p class="muted small">Define un límite mensual por categoría</p>
+      </div>
+      <button class="modal-close" data-close-modal="budgetModal">✕</button>
+    </div>
+    <form id="budgetForm">
+      <input type="hidden" id="budgetId">
+      <div class="form-row">
+        <label>Categoría</label>
+        <select id="budgetCategory"></select>
+      </div>
+      <div class="form-row">
+        <label>Límite mensual</label>
+        <input type="number" step="0.01" min="0" id="budgetLimit" placeholder="$0.00" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="budgetModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="modal" id="commitmentPaymentModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><h3>Registrar compromiso mensual</h3><p class="muted small">Elige qué vas a pagar o aportar este mes.</p></div><button class="modal-close" data-close-modal="commitmentPaymentModal">✕</button></div>
+    <form id="commitmentPaymentForm">
+      <div class="form-row"><label>Gasto fijo, aporte o cuota</label><select id="commitmentPaymentItem" required></select></div>
+      <p class="muted small" id="commitmentPaymentNote"></p>
+      <div id="commitmentPaymentAmountRow" class="form-row"><label id="commitmentPaymentAmountLabel">Monto</label><input type="number" min="0.01" step="0.01" id="commitmentPaymentAmount" required></div>
+      <div id="commitmentPaymentAccountRow" class="form-row"><label id="commitmentPaymentAccountLabel">Cuenta de origen</label><select id="commitmentPaymentAccount" required></select></div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" data-close-modal="commitmentPaymentModal">Cancelar</button><button type="submit" class="btn btn-primary" id="commitmentPaymentSubmit">Registrar</button></div>
+    </form>
+  </div>
+</div>
+<div class="modal" id="fixedExpenseModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><h3 id="fixedExpenseModalTitle">Agregar gasto fijo</h3><p class="muted small">Guarda el gasto para reutilizarlo cada mes.</p></div>
+      <button class="modal-close" data-close-modal="fixedExpenseModal">✕</button>
+    </div>
+    <form id="fixedExpenseForm">
+      <input type="hidden" id="fixedExpenseId">
+      <div class="form-row"><label>Descripción</label><input type="text" id="fixedExpenseName" placeholder="Ej. Agua, luz o cuota del crédito" required></div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>Categoría</label><select id="fixedExpenseCategory" required></select></div>
+        <div class="form-row"><label>Monto de referencia</label><input type="number" min="0.01" step="0.01" id="fixedExpenseAmount" required></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>Cuenta para pagarlo</label><select id="fixedExpenseAccount" required></select></div>
+        <div class="form-row"><label>Día habitual de pago</label><input type="number" min="1" max="31" id="fixedExpenseDueDay" placeholder="15"></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="fixedExpenseModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar gasto fijo</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ===== MODAL: Add / Edit Debt ===== -->
+<div class="modal" id="debtModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3 id="debtModalTitle">Agregar nueva deuda</h3>
+        <p class="muted small">Registra un préstamo, tarjeta o crédito</p>
+      </div>
+      <button class="modal-close" data-close-modal="debtModal">✕</button>
+    </div>
+    <form id="debtForm">
+      <input type="hidden" id="debtId">
+
+      <div class="form-row">
+        <label>Nombre de la deuda</label>
+        <input type="text" id="debtName" placeholder="Ej. Préstamo personal Banco X" required>
+      </div>
+
+      <div class="form-row">
+        <label>Tipo</label>
+        <select id="debtType"></select>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Moneda de la deuda</label>
+          <select id="debtCurrency"></select>
+        </div>
+        <div class="form-row">
+          <label>Cuenta habitual para pagar</label>
+          <select id="debtPaymentAccount"></select>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Monto total (capital)</label>
+          <input type="number" step="0.01" min="0" id="debtPrincipal" placeholder="$0.00" required>
+        </div>
+        <div class="form-row">
+          <label>Saldo pendiente</label>
+          <input type="number" step="0.01" min="0" id="debtBalance" placeholder="$0.00" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Monto de la cuota</label>
+          <input type="number" step="0.01" min="0" id="debtInstallmentAmount" placeholder="$0.00" required>
+        </div>
+        <div class="form-row">
+          <label>Día de pago (1-31)</label>
+          <input type="number" min="1" max="31" id="debtDueDay" placeholder="15" required>
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-row">
+          <label>Cuotas totales</label>
+          <input type="number" min="0" id="debtInstallmentsTotal" placeholder="24">
+        </div>
+        <div class="form-row">
+          <label>Cuotas pagadas</label>
+          <input type="number" min="0" id="debtInstallmentsPaid" placeholder="0">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Tasa de interés anual (%)</label>
+        <input type="number" step="0.01" min="0" id="debtInterestRate" placeholder="12.5">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="debtModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar deuda</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL: Pay debt installment ===== -->
+<div class="modal" id="debtPaymentModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div><h3 id="debtPaymentTitle">Registrar pago de cuota</h3><p class="muted small">Se registran por separado capital e intereses.</p></div>
+      <button class="modal-close" data-close-modal="debtPaymentModal">✕</button>
+    </div>
+    <form id="debtPaymentForm">
+      <input type="hidden" id="debtPaymentId">
+      <p class="muted small" id="debtPaymentScheduled"></p>
+      <div class="form-row"><label>Cuenta desde la que pagas</label><select id="debtPaymentAccountSelect" required></select></div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>Capital amortizado</label><input type="number" min="0" step="0.01" id="debtPaymentPrincipal" required></div>
+        <div class="form-row"><label>Intereses y cargos</label><input type="number" min="0" step="0.01" id="debtPaymentInterest" value="0" required></div>
+      </div>
+      <div class="form-row"><label>Fecha de pago</label><input type="date" id="debtPaymentDate" required></div>
+      <p class="muted small">Total de esta cuota: <strong id="debtPaymentTotal">S/ 0.00</strong></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close-modal="debtPaymentModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar pago</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Overlay de cargando global -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <p class="loading-text" id="loadingText">Cargando...</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- ============================
+     ORDEN DE CARGA — NO CAMBIAR
+     ============================
+     El orden importa:
+       1. helpers  (sin dependencias)
+       2. api      (usa fetch)
+       3. state    (usa api + helpers)
+       4. theme/modals/charts/navigation (usan state)
+       5. vistas   (usan state y helpers)
+       6. app.js   (arranca todo, al final)
+     ============================ -->
+
+<!-- Core -->
+<script src="js/core/helpers.js"></script>
+<script src="js/core/api.js"></script>
+<script src="js/core/state.js"></script>
+<script src="js/core/theme.js"></script>
+<script src="js/core/modals.js"></script>
+<script src="js/core/charts.js"></script>
+<script src="js/core/navigation.js"></script>
+
+<!-- Vistas -->
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/transactions.js"></script>
+<script src="js/views/accounts.js"></script>
+<script src="js/views/goals.js"></script>
+<script src="js/views/budget.js"></script>
+<script src="js/views/debts.js"></script>
+<script src="js/views/analytics.js"></script>
+<script src="js/views/reports.js"></script>
+<script src="js/views/settings.js"></script>
+<script src="js/views/notifications.js"></script>
+
+<!-- Arranque — SIEMPRE al final -->
+<script src="js/app.js"></script>
+</body>
+</html>
