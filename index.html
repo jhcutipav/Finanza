@@ -20,8 +20,51 @@
 <link rel="stylesheet" href="css/reports.css">
 <link rel="stylesheet" href="css/settings.css">
 <link rel="stylesheet" href="css/notifications.css">
+<link rel="stylesheet" href="css/auth.css">
 </head>
 <body>
+
+<main class="auth-screen" id="authScreen" aria-labelledby="authTitle">
+  <section class="auth-card">
+    <div class="auth-brand"><span class="brand-mark">F</span><span>FinSet</span></div>
+    <div class="auth-panel" id="authLoginPanel">
+      <h1 id="authTitle">Iniciar sesión</h1><p class="muted">Ingresa a tus finanzas personales.</p>
+      <form id="authLoginForm" class="auth-form">
+        <label>Correo<input type="email" id="authLoginEmail" autocomplete="username" required></label>
+        <label>Contraseña<input type="password" id="authLoginPassword" autocomplete="current-password" required></label>
+        <label class="auth-check"><input type="checkbox" id="authRemember" checked><span>Mantener la sesión iniciada</span></label>
+        <button type="submit" class="btn btn-primary">Ingresar</button>
+      </form>
+      <button type="button" class="auth-link" data-auth-show="recover">Olvidé mi contraseña</button>
+      <p class="auth-message" id="authLoginMessage" role="status"></p>
+    </div>
+    <div class="auth-panel" id="authSetupPanel" hidden>
+      <h1>Configurar acceso</h1><p class="muted">Crea tu contraseña privada. El correo se usará para recuperar el acceso.</p>
+      <form id="authSetupForm" class="auth-form">
+        <label>Clave de configuración<input type="password" id="authSetupKey" autocomplete="off" required></label>
+        <label>Tu correo<input type="email" id="authSetupEmail" autocomplete="email" required></label>
+        <label>Crea una contraseña<input type="password" id="authSetupPassword" minlength="10" autocomplete="new-password" required></label>
+        <label>Confirma la contraseña<input type="password" id="authSetupConfirm" minlength="10" autocomplete="new-password" required></label>
+        <button type="submit" class="btn btn-primary">Guardar y entrar</button>
+      </form>
+      <p class="auth-message" id="authSetupMessage" role="status"></p>
+    </div>
+    <div class="auth-panel" id="authRecoverPanel" hidden>
+      <h1>Recuperar acceso</h1><p class="muted">Te enviaremos un código al correo configurado.</p>
+      <form id="authRequestResetForm" class="auth-form">
+        <label>Correo<input type="email" id="authResetEmail" autocomplete="email" required></label>
+        <button type="submit" class="btn btn-ghost">Enviar código</button>
+      </form>
+      <form id="authResetPasswordForm" class="auth-form auth-reset-form" hidden>
+        <label>Código recibido<input type="text" id="authResetCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+        <label>Nueva contraseña<input type="password" id="authResetPassword" minlength="10" autocomplete="new-password" required></label>
+        <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+      </form>
+      <button type="button" class="auth-link" data-auth-show="login">Volver a iniciar sesión</button>
+      <p class="auth-message" id="authRecoverMessage" role="status"></p>
+    </div>
+  </section>
+</main>
 
 <div class="app">
   <!-- ===== SIDEBAR ===== -->
@@ -1109,6 +1152,7 @@
 <!-- Core -->
 <script src="js/core/helpers.js"></script>
 <script src="js/core/api.js"></script>
+<script src="js/core/auth.js"></script>
 <script src="js/core/state.js"></script>
 <script src="js/core/theme.js"></script>
 <script src="js/core/modals.js"></script>

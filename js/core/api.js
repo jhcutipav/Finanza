@@ -1,8 +1,7 @@
 /* ==========================================================================
    api.js — Capa de conexión con Google Apps Script (backend).
    --------------------------------------------------------------------------
-   🟡 CONFIGURACIÓN: cambia API_URL y API_TOKEN por tus valores reales.
-   🔴 El TOKEN debe coincidir EXACTAMENTE con el de tu Apps Script.
+   La app usa sesiones de corta duración validadas por Apps Script.
    --------------------------------------------------------------------------
    🧠 CACHÉ: guarda la última lectura en memoria durante CACHE_TTL_MS ms.
    Si navegas entre vistas antes de que expire, no vuelve a llamar al Sheet.
@@ -12,8 +11,8 @@
 /* URL de tu App Web de Apps Script (termina en /exec) */
 const API_URL = 'https://script.google.com/macros/s/AKfycbwYPAgKx27uChwqgjuT8kF3FuOpvdh8yJcvFfYFUsBptDroaf3ao3RcmrdK3KqwDOXV-g/exec';
 
-/* Token secreto — debe ser el MISMO que pusiste en el Apps Script */
-const API_TOKEN = 'app-finanzas-neyo-2026-xk98m4p2';
+/* La API requiere un token de sesión emitido por Apps Script al iniciar sesión. */
+function apiSessionToken(){ return localStorage.getItem('finset_auth_session')||sessionStorage.getItem('finset_auth_session')||''; }
 
 /* ==========================================================================
    CACHÉ DE LECTURA
@@ -41,15 +40,12 @@ function invalidarCache(){
    ========================================================================== */
 
 /**
- * Hace un GET al backend.
+ * Lee datos mediante POST para no exponer el token de sesión en la URL.
  * @param {Object} params  Ej: { accion: 'obtenerTodo' }
  * @returns {Promise<Object>}
  */
 async function apiGet(params){
-  const url = new URL(API_URL);
-  Object.entries(params || {}).forEach(([k, v]) => url.searchParams.set(k, v));
-
-  const res = await fetch(url.toString(), { method: 'GET' });
+  const res = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...params,sessionToken:apiSessionToken()})});
   if(!res.ok) throw new Error('HTTP ' + res.status);
   return await res.json();
 }
@@ -64,7 +60,7 @@ async function apiPost(body){
   if(typeof navigator !== 'undefined' && !navigator.onLine){
     throw new Error('Sin conexión: el cambio no se guardó. Reconéctate e inténtalo de nuevo.');
   }
-  const payload = { ...body, token: API_TOKEN };
+  const payload = { ...body, sessionToken: apiSessionToken() };
 
   const res = await fetch(API_URL, {
     method: 'POST',
@@ -72,6 +68,13 @@ async function apiPost(body){
     body: JSON.stringify(payload)
   });
   if(!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
+}
+
+/** Envía acciones públicas limitadas a inicio/recuperación de sesión, sin credenciales de la app. */
+async function apiAuthPost(accion,datos={}){
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({accion,...datos})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
   return await res.json();
 }
 

@@ -101,8 +101,8 @@ function initNavigation(){
   });
 
   document.getElementById('logoutBtn').addEventListener('click', ()=>{
-    if(confirm('¿Deseas cerrar sesión? Tus datos permanecerán guardados en este navegador.')){
-      toast('Sesión cerrada');
+    if(confirm('¿Deseas cerrar sesión? Se borrará la copia local de tus datos en este dispositivo.')){
+      authLogout();
     }
   });
 

@@ -9,7 +9,9 @@
  *  2. Conecta listeners de navegación, tema, modales y vistas
  *  3. Aplica el tema y navega al Dashboard
  */
-async function init(){
+let finsetStarted=false;
+async function startFinSetApp(){
+  if(finsetStarted)return;
   // Mostrar cargando desde el inicio
   mostrarCargando('Cargando datos...');
 
@@ -39,13 +41,17 @@ async function init(){
 
     applyTheme();
     goToView('dashboard');
+    finsetStarted=true;
   }catch(e){
     console.error('Error al inicializar:', e);
-    toast('Error al cargar: ' + e.message);
+    throw e;
   }finally{
     ocultarCargando();
   }
 }
+
+/** Muestra primero el acceso; el contenido se inicializa solo tras validar sesión. */
+async function init(){await initAuthGate();}
 
 /* Arranca cuando el DOM esté listo */
 document.addEventListener('DOMContentLoaded', init);
