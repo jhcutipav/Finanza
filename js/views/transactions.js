@@ -59,7 +59,9 @@ function fullRow(t){
   const isIncome = t.type === 'income';
   const amount = `${isIncome ? '+' : '−'}${fmtMoney(t.amount, t.currency)}`;
   const detail = t.category === 'Transferencia' && t.transferType === 'interna'
-    ? `Interna · comisión ${fmtMoney(t.commission || 0, t.currency)}`
+    ? `Interna · ${state.accounts.find(a=>a.id===t.accountId)?.name||'Origen'} → ${state.accounts.find(a=>a.id===t.destinationAccountId)?.name||'Destino'} · comisión ${fmtMoney(t.commission || 0, t.currency)}`
+    : t.category === 'Transferencia' && t.transferType === 'externa'
+      ? `Externa · comisión ${fmtMoney(t.commission||0,t.currency)} · paga ${t.commissionPayer==='origen'?'origen':'destinatario'}`
     : t.category === 'Cuota de deuda'
       ? `Capital ${fmtMoney(t.principalPaid || 0,t.currency)} · interés ${fmtMoney(t.interestPaid || 0,t.currency)}`
       : etiquetaCategoria(t.category);

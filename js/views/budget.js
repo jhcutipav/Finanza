@@ -234,18 +234,28 @@ async function registerFixedExpensePayment(id){
 }
 
 /** Abre un selector común para pagar gastos fijos, aportar a metas o pasar a pagar una cuota. */
-function openCommitmentPaymentModal(selected=''){
-  const fixed=fixedExpenseRecords();
+function openCommitmentPaymentModal(selected='',fixedOnly=false){
+  const fixed=fixedOnly?state.budgets.filter(b=>b.kind==='gasto_fijo'):fixedExpenseRecords();
   const goals=state.goals.filter(g=>Number(g.monthlyContribution)>0&&
     (state.accounts.some(a=>a.id===g.accountId&&!esCuentaPasivo(a)&&(a.currency||'PEN')===state.settings.currency)));
   const debts=(state.debts||[]).filter(d=>(d.currency||'PEN')===state.settings.currency&&d.balance>0&&d.installmentAmount>0);
-  if(!fixed.length&&!goals.length&&!debts.length){toast('No hay compromisos mensuales disponibles para registrar');return;}
+  if(fixedOnly&&!fixed.length){
+    if(!state.accounts.length){toast('Primero agrega una cuenta para registrar tus gastos fijos.');goToView('accounts');return;}
+    toast('Aún no tienes gastos fijos. Registra uno para poder pagarlo.');
+    goToView('budget');openFixedExpenseModal();return;
+  }
+  if(!fixedOnly&&!fixed.length&&!goals.length&&!debts.length){toast('No hay compromisos mensuales disponibles para registrar');return;}
   const select=document.getElementById('commitmentPaymentItem');
   select.innerHTML=[
     fixed.length?`<optgroup label="Gastos fijos">${fixed.map(f=>`<option value="fixed:${escapeHTML(f.id)}">${escapeHTML(f.name||etiquetaCategoria(f.category))}</option>`).join('')}</optgroup>`:'',
-    goals.length?`<optgroup label="Aportes de ahorro">${goals.map(g=>`<option value="goal:${escapeHTML(g.id)}">Aporte a ${escapeHTML(g.name)}</option>`).join('')}</optgroup>`:'',
-    debts.length?`<optgroup label="Cuotas de deuda">${debts.map(d=>`<option value="debt:${escapeHTML(d.id)}">Cuota de ${escapeHTML(d.name)}</option>`).join('')}</optgroup>`:''
+    !fixedOnly&&goals.length?`<optgroup label="Aportes de ahorro">${goals.map(g=>`<option value="goal:${escapeHTML(g.id)}">Aporte a ${escapeHTML(g.name)}</option>`).join('')}</optgroup>`:'',
+    !fixedOnly&&debts.length?`<optgroup label="Cuotas de deuda">${debts.map(d=>`<option value="debt:${escapeHTML(d.id)}">Cuota de ${escapeHTML(d.name)}</option>`).join('')}</optgroup>`:''
   ].join('');
+  const modal=document.getElementById('commitmentPaymentModal');
+  modal.dataset.fixedOnly=fixedOnly?'true':'false';
+  modal.querySelector('.modal-head h3').textContent=fixedOnly?'Pagar gasto fijo':'Registrar compromiso mensual';
+  modal.querySelector('.modal-head p').textContent=fixedOnly?'Elige el gasto y la cuenta desde la que saldrá el pago.':'Elige qué vas a pagar o aportar este mes.';
+  document.getElementById('commitmentPaymentItemLabel').textContent=fixedOnly?'Gasto fijo':'Gasto fijo, aporte o cuota';
   if(selected&&[...select.options].some(o=>o.value===selected))select.value=selected;
   updateCommitmentPaymentFields();
   openModal('commitmentPaymentModal');
@@ -263,9 +273,9 @@ function updateCommitmentPaymentFields(){
     const fixed=state.budgets.find(b=>b.id===id&&b.kind==='gasto_fijo');if(!fixed)return;
     const defaultAccount=state.accounts.find(a=>a.id===fixed.accountId);
     currency=defaultAccount?.currency||state.settings.currency;preferred=defaultAccount?.id||'';planned=Number(fixed.limit)||0;
-    note.textContent=`${etiquetaCategoria(fixed.category)} · puedes ajustar el monto estimado al pagar.`;
+    note.textContent=`${etiquetaCategoria(fixed.category)} · puedes ajustar el monto y elegir otra cuenta de ${currency}, incluida una tarjeta de crédito.`;
     document.getElementById('commitmentPaymentAmountLabel').textContent=`Monto a pagar (${currency})`;
-    document.getElementById('commitmentPaymentAccountLabel').textContent='Pagar desde esta cuenta';
+    document.getElementById('commitmentPaymentAccountLabel').textContent='Cuenta desde la que pagarás';
     submit.textContent='Registrar pago';
   }else if(kind==='goal'){
     const goal=state.goals.find(g=>g.id===id),destination=state.accounts.find(a=>a.id===goal?.accountId);if(!goal||!destination)return;
@@ -284,7 +294,11 @@ function updateCommitmentPaymentFields(){
   amountRow.hidden=false;accountRow.hidden=false;amount.required=true;accountSelect.required=true;
   amount.value=planned||'';
   const sources=state.accounts.filter(a=>(a.currency||'PEN')===currency&&a.id!==excludeId);
-  accountSelect.innerHTML=sources.map(a=>`<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}${a.bank?' · '+escapeHTML(a.bank):''} · ${escapeHTML(claseCuentaNombre(a.accountKind))}</option>`).join('');
+  accountSelect.innerHTML=sources.map(a=>{
+    const kind=claseCuentaNombre(a.accountKind);
+    const creditInfo=esCuentaPasivo(a)?` · disponible ${fmtMoney(Math.max(0,(Number(a.creditLimit)||0)-(Number(a.balance)||0)),currency)}`:'';
+    return `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}${a.bank?' · '+escapeHTML(a.bank):''} · ${escapeHTML(kind)}${creditInfo}</option>`;
+  }).join('');
   if(sources.some(a=>a.id===preferred))accountSelect.value=preferred;
   else if(sources.length)accountSelect.value=sources[0].id;
   submit.disabled=!sources.length;
@@ -347,5 +361,6 @@ function initBudgetView(){
   document.getElementById('fixedExpenseForm').addEventListener('submit',handleFixedExpenseSubmit);
   document.getElementById('commitmentPaymentItem').addEventListener('change',updateCommitmentPaymentFields);
   document.getElementById('commitmentPaymentForm').addEventListener('submit',handleCommitmentPaymentSubmit);
-  document.getElementById('dashFixedCommitmentBtn').addEventListener('click',()=>openCommitmentPaymentModal());
+  document.getElementById('dashFixedCommitmentBtn').addEventListener('click',()=>openCommitmentPaymentModal('',true));
+  document.getElementById('dashboardFixedPaymentBtn')?.addEventListener('click',()=>openCommitmentPaymentModal('',true));
 }

@@ -51,10 +51,28 @@ function isDashboardEligibleAccount(id){
   return dashboardEligibleAccounts().some(a=>a.id===id);
 }
 
+/** Usa la moneda de la cuenta seleccionada; para varias cuentas conserva la moneda preferida. */
+function dashboardCurrency(){
+  if(dashboardFilters.accountIds.length===1){
+    const selected=state.accounts.find(a=>a.id===dashboardFilters.accountIds[0]);
+    if(selected)return selected.currency||'PEN';
+  }
+  return state.settings.currency||'PEN';
+}
+
 /** Comprueba si una transacción toca alguna cuenta incluida en el filtro del Dashboard. */
 function transactionMatchesDashboardAccounts(t){
-  const ids=hasAccountFilter()?dashboardFilters.accountIds:dashboardEligibleAccounts().map(a=>a.id);
+  const ids=hasAccountFilter()?dashboardFilters.accountIds:state.accounts.map(a=>a.id);
   return ids.includes(t.accountId)||ids.includes(t.destinationAccountId);
+}
+
+/** Confirma que un movimiento toca una cuenta de la moneda actualmente elegida en el Dashboard. */
+function transactionMatchesDashboardCurrency(t){
+  const currency=dashboardCurrency();
+  return [t.accountId,t.destinationAccountId].filter(Boolean).some(id=>{
+    const account=state.accounts.find(a=>a.id===id);
+    return account&&(account.currency||'PEN')===currency;
+  });
 }
 
 /* ---------- HELPERS DE FILTRADO ---------- */
@@ -69,8 +87,8 @@ function filteredTransactions(){
     const d = new Date(t.date + 'T00:00:00');
     if(d.getFullYear() !== dashboardFilters.year) return false;
     if(d.getMonth()    !== dashboardFilters.month) return false;
-    if((t.currency || 'PEN') !== state.settings.currency) return false;
     if(!transactionMatchesDashboardAccounts(t)) return false;
+    if(!transactionMatchesDashboardCurrency(t)) return false;
     return true;
   });
 }
@@ -81,13 +99,14 @@ function filteredTransactions(){
  * @returns {number}
  */
 function balanceAtEndOfFilteredMonth(){
+  const currency=dashboardCurrency();
   const currentBalance = dashboardEligibleAccounts()
-    .filter(a=> a.currency === state.settings.currency)
+    .filter(a=> (a.currency||'PEN') === currency)
     .filter(a=> !hasAccountFilter() || dashboardFilters.accountIds.includes(a.id))
     .reduce((s,a)=> s + valorGlobalCuenta(a), 0);
 
   const end = new Date(dashboardFilters.year, dashboardFilters.month + 1, 0);
-  const endIso = end.toISOString().slice(0,10);
+  const endIso = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2,'0')}-${String(end.getDate()).padStart(2,'0')}`;
 
   const laterTx = state.transactions.filter(t=>{
     if(t.date <= endIso) return false;
@@ -101,7 +120,7 @@ function balanceAtEndOfFilteredMonth(){
     const impacts = impactoTransaccion(t);
     Object.entries(impacts).forEach(([id, delta])=>{
       const account = state.accounts.find(a=> a.id === id);
-      if(account?.currency === state.settings.currency && isDashboardEligibleAccount(id) &&
+      if((account?.currency||'PEN') === currency && isDashboardEligibleAccount(id) &&
          (!hasAccountFilter() || dashboardFilters.accountIds.includes(id)))
         balance -= (esCuentaPasivo(account) ? -delta : delta);
     });
@@ -126,16 +145,27 @@ function filteredDashboardGoals(){
 
 /** Ingresos del mes filtrado (solo exitosos). */
 function monthIncome(){
-  return filteredTransactions()
-    .filter(t=> t.type==='income' && t.status==='Exitoso')
-    .reduce((s,t)=> s + t.amount, 0);
+  return dashboardMovementTotals().income;
 }
 
 /** Gastos del mes filtrado (solo exitosos). */
 function monthExpense(){
-  return filteredTransactions()
-    .filter(t=> t.type==='expense' && t.status==='Exitoso')
-    .reduce((s,t)=> s + gastoUsuario(t), 0);
+  return dashboardMovementTotals().expense;
+}
+
+/** Suma entradas y salidas por impacto real en cada cuenta, incluidas recargas y usos de crédito. */
+function dashboardMovementTotals(){
+  const totals={income:0,expense:0},currency=dashboardCurrency();
+  const ids=hasAccountFilter()?dashboardFilters.accountIds:state.accounts.map(a=>a.id);
+  filteredTransactions().filter(t=>t.status==='Exitoso').forEach(t=>{
+    Object.entries(impactoTransaccion(t)).forEach(([id,delta])=>{
+      const account=state.accounts.find(a=>a.id===id);
+      if(!account||!ids.includes(id)||(account.currency||'PEN')!==currency||!delta)return;
+      if(esCuentaPasivo(account)){if(delta>0)totals.expense+=delta;else totals.income+=Math.abs(delta);}
+      else if(delta>0)totals.income+=delta;else totals.expense+=Math.abs(delta);
+    });
+  });
+  return totals;
 }
 
 /* Las transferencias internas no gastan el monto principal; solo su comisión. */
@@ -183,8 +213,9 @@ function categorySpend(cat){
 
 /** Saldo total (respetando filtro de cuentas, no de mes). */
 function totalBalance(){
+  const currency=dashboardCurrency();
   return dashboardEligibleAccounts()
-    .filter(a=> a.currency === state.settings.currency)
+    .filter(a=> (a.currency||'PEN') === currency)
     .filter(a=> !hasAccountFilter() || dashboardFilters.accountIds.includes(a.id))
     .reduce((s,a)=> s + valorGlobalCuenta(a), 0);
 }
@@ -223,9 +254,8 @@ function initDashboardFilters(){
   monthSel.value = dashboardFilters.month;
   yearSel.value  = dashboardFilters.year;
 
-  // La cuenta principal se aplica solo como selección inicial; el usuario puede cambiar a Todos o a otra cuenta.
-  const primary=cuentaPrincipalDashboard();
-  dashboardFilters.accountIds=primary?[primary.id]:[];
+  // El Dashboard inicia con todas las cuentas no crediticias para que el saldo global sea realmente global.
+  dashboardFilters.accountIds=[];
 
   monthSel.addEventListener('change', ()=>{
     dashboardFilters.month = parseInt(monthSel.value, 10);
@@ -357,15 +387,16 @@ function renderDashboard(){
   renderDashboardAccountQuickFilters();
 
   const bal = balanceAtEndOfFilteredMonth();
+  const currency=dashboardCurrency();
   const inc = monthIncome();
   const exp = monthExpense();
   const sav = savingsAtEndOfFilteredMonth();
 
   document.getElementById('statGrid').innerHTML = [
-    statCard('Saldo al cierre', bal, '+12.1%', 'up', iconWallet()),
-    statCard('Ingresos',        inc, '+6.3%',  'up', iconArrowDown()),
-    statCard('Gastos',          exp, '+2.4%',  'down', iconArrowUp()),
-    statCard('Ahorros totales', sav, '+12.1%', 'up', iconTarget())
+    statCard('Saldo al cierre', bal, '+12.1%', 'up', iconWallet(), currency),
+    statCard('Ingresos',        inc, '+6.3%',  'up', iconArrowDown(), currency),
+    statCard('Gastos',          exp, '+2.4%',  'down', iconArrowUp(), currency),
+    statCard('Ahorros totales', sav, '+12.1%', 'up', iconTarget(), currency)
   ].join('');
 
   // Transacciones recientes del mes filtrado
@@ -373,7 +404,7 @@ function renderDashboard(){
     .sort((a,b)=> b.date.localeCompare(a.date))
     .slice(0,5);
   document.querySelector('#recentTxTable tbody').innerHTML =
-    recent.map(t=> miniRow(t)).join('') || emptyRow();
+    recent.map(t=> miniRow(t,hasAccountFilter()&&dashboardFilters.accountIds.length===1?dashboardFilters.accountIds[0]:'')).join('') || emptyRow();
 
   // Metas mini (filtradas por cuenta)
   const visibleGoals = filteredDashboardGoals();
@@ -406,10 +437,10 @@ function renderDashboard(){
 /**
  * Devuelve el HTML de una stat-card.
  */
-function statCard(label, value, change, dir, icon){
+function statCard(label, value, change, dir, icon, currency=dashboardCurrency()){
   return `<div class="stat-card">
     <div class="stat-top"><span class="stat-label">${label}</span><span class="stat-icon">${icon}</span></div>
-    <div class="stat-value">${fmtMoney(value)}</div>
+    <div class="stat-value">${fmtMoney(value,currency)}</div>
     <div class="stat-foot">
       <span class="stat-change ${dir}">${dir==='up'?'↑':'↓'} ${change}</span>
       <span class="stat-sub">vs. mes anterior</span>
@@ -441,12 +472,17 @@ function iconTarget(){    return `<svg width="15" height="15" viewBox="0 0 24 24
 /**
  * Fila compacta de transacción (usada en Dashboard y Billetera).
  */
-function miniRow(t){
+function miniRow(t,accountId=''){
   const meta = metaCategoria(t.category);
-  const amt = t.type==='income' ? `+${fmtMoney(t.amount, t.currency)}` : `-${fmtMoney(t.amount, t.currency)}`;
+  const account=accountId?state.accounts.find(a=>a.id===accountId):null;
+  const impact=account?(impactoTransaccion(t)[account.id]||0):0;
+  const value=account?(esCuentaPasivo(account)?-impact:impact):((t.type==='income'?1:-1)*(Number(t.amount)||0));
+  const currency=account?.currency||t.currency;
+  const amt = `${value>=0?'+':'−'}${fmtMoney(Math.abs(value), currency)}`;
+  const positive=value>=0;
   return `<tr>
     <td style="color:var(--text-muted); width:70px;">${escapeHTML(fmtDateShort(t.date))}</td>
-    <td class="${t.type==='income'?'amount-pos':'amount-neg'}" style="width:90px;">${amt}</td>
+    <td class="${positive?'amount-pos':'amount-neg'}" style="width:90px;">${amt}</td>
     <td><div class="tx-name-cell"><span class="tx-icon">${escapeHTML(meta.icon)}</span>${escapeHTML(t.name)}</div></td>
     <td style="color:var(--text-muted);">${escapeHTML(etiquetaCategoria(t.category))}</td>
   </tr>`;
@@ -468,8 +504,14 @@ function monthlyFlowSeries(){
   tx.forEach(t=>{
     const day = parseInt(t.date.slice(8,10), 10);
     if(day < 1 || day > daysInMonth) return;
-    if(t.type==='income') inc[day-1] += Number(t.amount)||0;
-    else if(t.type==='expense') exp[day-1] += gastoUsuario(t);
+    const currency=dashboardCurrency();
+    const ids=hasAccountFilter()?dashboardFilters.accountIds:state.accounts.map(a=>a.id);
+    Object.entries(impactoTransaccion(t)).forEach(([id,delta])=>{
+      const account=state.accounts.find(a=>a.id===id);
+      if(!account||!ids.includes(id)||(account.currency||'PEN')!==currency||!delta)return;
+      const amount=esCuentaPasivo(account)?-delta:delta;
+      if(amount>0)inc[day-1]+=amount;else exp[day-1]+=Math.abs(amount);
+    });
   });
   const net = inc.map((amount,index)=>amount-exp[index]);
   return { labels:Array.from({length:daysInMonth},(_,i)=>String(i+1)), inc, exp, net };

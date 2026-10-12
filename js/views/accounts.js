@@ -171,7 +171,7 @@ function renderSelectedAccountDetails(account){
     <div class="account-detail-foot"><div><small>${liability?'Consumo de la línea este mes':'Movimientos este mes'}</small><strong>${liability?fmtMoney(month.positive,account.currency):month.count+' movimientos'}</strong></div>${esTarjetaCredito(account)?`<div><small>Día de corte</small><strong>${account.closingDay?`Día ${account.closingDay} de cada mes`:'No configurado'}</strong></div><div><small>Día de pago</small><strong>${account.paymentDay?`Día ${account.paymentDay} de cada mes`:'No configurado'}</strong></div>`:''}<div><small>Último movimiento</small><strong>${recentTransactions[0]?fmtDateShort(recentTransactions[0].date):'Sin movimientos'}</strong></div></div>`;
   document.getElementById('editSelectedAccount').addEventListener('click',()=>openAccountModal(account.id));
   document.getElementById('deleteSelectedAccount').addEventListener('click',()=>deleteAccount(account.id));
-  document.querySelector('#walletRecentTable tbody').innerHTML=recentTransactions.slice(0,5).map(t=>miniRow(t)).join('')||emptyRow();
+  document.querySelector('#walletRecentTable tbody').innerHTML=recentTransactions.slice(0,5).map(t=>miniRow(t,account.id)).join('')||emptyRow();
 
   const byCat={};
   const now=new Date();
@@ -199,11 +199,58 @@ function renderSelectedAccountDetails(account){
  * Uso: Se usa en el módulo Cuentas, desde renderizadores o controladores de eventos. Actualizar esta nota si cambia su responsabilidad.
  */
 function populateAccountSelects(){
-  const opts = state.accounts.map(a=> `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}${a.bank ? ' · '+escapeHTML(a.bank) : ''}</option>`).join('');
   const from = document.getElementById('transferFrom');
-  const to = document.getElementById('transferTo');
-  if(from) from.innerHTML = opts;
-  if(to) to.innerHTML = opts;
+  if(from) from.innerHTML = state.accounts.map(a=> `<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}${a.bank ? ' · '+escapeHTML(a.bank) : ''} · ${fmtMoney(a.balance,a.currency||'PEN')}</option>`).join('');
+  updateDedicatedTransferFields();
+}
+
+/** Abre el formulario exclusivo de transferencias o recargas desde Dashboard/Cuentas. */
+function openDedicatedTransferModal(){
+  if(!state.accounts.length){toast('Agrega una cuenta para registrar la transferencia');return;}
+  populateAccountSelects();
+  document.getElementById('transferForm').reset();
+  document.getElementById('transferDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('transferCommission').value='0';
+  const preferred=state.accounts.find(a=>a.id===activeAccountId)||state.accounts[0];
+  document.getElementById('transferFrom').value=preferred.id;
+  updateDedicatedTransferFields();
+  openModal('transferModal');
+}
+
+/** Mantiene las cuentas destino y los campos FX de acuerdo con el tipo de transferencia. */
+function updateDedicatedTransferFields(){
+  const from=document.getElementById('transferFrom'),to=document.getElementById('transferTo');
+  if(!from||!to)return;
+  const source=state.accounts.find(a=>a.id===from.value)||state.accounts[0];
+  const mode=document.getElementById('transferMode')?.value||'interna';
+  const candidates=state.accounts.filter(a=>a.id!==source?.id&&(mode!=='recarga'||a.accountKind==='billetera'));
+  const previous=to.value;
+  to.innerHTML=candidates.map(a=>`<option value="${escapeHTML(a.id)}">${escapeHTML(a.name)}${a.bank?' · '+escapeHTML(a.bank):''}</option>`).join('');
+  if(candidates.some(a=>a.id===previous))to.value=previous;
+  const destination=candidates.find(a=>a.id===to.value);
+  const external=mode==='externa';
+  document.getElementById('transferDestinationRow').hidden=external;
+  document.getElementById('transferDestinationRow').querySelector('select').required=!external;
+  document.getElementById('transferCommissionPayerRow').hidden=!external;
+  const fx=!external&&!!source&&!!destination&&(source.currency||'PEN')!==(destination.currency||'PEN');
+  document.getElementById('transferExchangeRow').hidden=!fx;
+  document.getElementById('transferAmount').disabled=fx;
+  document.getElementById('transferAmount').required=!fx;
+  document.getElementById('transferAmountLabel').textContent=fx?'Monto debitado (se calcula)':'Monto que sale de la cuenta origen';
+  document.getElementById('transferCommissionLabel').textContent=`Comisión (${source?.currency||'PEN'})`;
+  document.getElementById('transferHint').textContent=mode==='recarga'
+    ?'La recarga registra el uso en la tarjeta/cuenta origen y el ingreso en la billetera digital.'
+    :external?'Se registrará una salida desde la cuenta de origen. Define quién asume la comisión.'
+    :'Se registrará un egreso en el origen y un ingreso en el destino. Si tienen monedas distintas, completa el tipo de cambio.';
+  if(fx)updateDedicatedTransferAmount();
+}
+
+/** Calcula el débito en PEN al comprar moneda extranjera para la cuenta destino. */
+function updateDedicatedTransferAmount(){
+  const destinationAmount=Number(document.getElementById('transferDestinationAmount').value)||0;
+  const rate=Number(document.getElementById('transferExchangeRate').value)||0;
+  const fee=Number(document.getElementById('transferCommission').value)||0;
+  document.getElementById('transferAmount').value=destinationAmount>0&&rate>0?(destinationAmount*rate+fee).toFixed(2):'';
 }
 
 /**
@@ -329,31 +376,43 @@ async function deleteAccount(id){
   }
 }
 
-/**
- * Transferencia entre cuentas.
- * Nota: por ahora solo actualiza el state local. En un próximo paso se
- * puede hacer que genere 2 transacciones en el Sheet.
- */
+/** Guarda la transferencia como una transacción única para que Sheet, saldos y todas las vistas queden sincronizados. */
 async function handleTransfer(e){
   e.preventDefault();
   const fromId = document.getElementById('transferFrom').value;
   const toId   = document.getElementById('transferTo').value;
-  const amount = parseFloat(document.getElementById('transferAmount').value) || 0;
+  const mode=document.getElementById('transferMode').value;
+  const fee=Number(document.getElementById('transferCommission').value)||0;
+  const date=document.getElementById('transferDate').value;
 
   if(fromId === toId){ toast('Elige cuentas diferentes'); return; }
   const from = state.accounts.find(a=> a.id===fromId);
   const to   = state.accounts.find(a=> a.id===toId);
-  if(!from || !to){ toast('Cuentas inválidas'); return; }
-  if(amount > from.balance){ toast('Saldo insuficiente'); return; }
-
-  if(!Number.isFinite(amount) || amount <= 0){ toast('Ingresa un monto válido'); return; }
+  if(!from||(mode!=='externa'&&!to)){ toast('Cuentas inválidas'); return; }
+  if(mode!=='externa'&&fromId===toId){ toast('Elige cuentas diferentes'); return; }
+  if(mode==='recarga'&&to.accountKind!=='billetera'){toast('Para una recarga, el destino debe ser una billetera digital');return;}
+  if(!date||fee<0){toast('Completa una fecha y una comisión válida');return;}
+  const fx=mode!=='externa'&&(from.currency||'PEN')!==(to.currency||'PEN');
+  const amountInput=Number(document.getElementById('transferAmount').value)||0;
+  const destinationAmount=mode==='externa'?0:fx?Number(document.getElementById('transferDestinationAmount').value)||0:amountInput-fee;
+  const rate=fx?Number(document.getElementById('transferExchangeRate').value)||0:1;
+  const amount=fx?destinationAmount*rate+fee:amountInput;
+  const commissionPayer=mode==='externa'?document.getElementById('transferCommissionPayer').value:'origen';
+  if(amount<=0||(mode!=='externa'&&(destinationAmount<=0||fee>=amount))){toast('Ingresa un monto y una comisión válidos');return;}
+  if(fx&&((from.currency||'PEN')!=='PEN'||(to.currency||'PEN')!=='USD'||rate<=0)){toast('El cambio entre monedas disponible es de PEN a USD; completa un tipo de cambio válido');return;}
+  const debit=amount+(mode==='externa'&&commissionPayer==='origen'?fee:0);
+  const available=esCuentaPasivo(from)?Math.max(0,(Number(from.creditLimit)||0)-(Number(from.balance)||0)):Number(from.balance)||0;
+  if(debit>available){toast(esCuentaPasivo(from)?'Línea de crédito disponible insuficiente':'Saldo insuficiente');return;}
+  const transferMethod=opcionesCatalogo('metodo_pago').find(x=>/transferencia/i.test(x.value))?.value||'Transferencia bancaria';
+  const tx={id:null,type:'expense',category:'Transferencia',name:mode==='recarga'?`Recarga: ${to.name}`:mode==='externa'?'Transferencia externa':`Transferencia a ${to.name}`,
+    method:transferMethod,accountId:from.id,destinationAccountId:mode==='externa'?'':to.id,transferType:mode==='externa'?'externa':'interna',amount,currency:from.currency||'PEN',
+    destinationAmount,destinationCurrency:to?.currency||'',exchangeRate:fx?rate:0,commission:fee,commissionPayer,date,status:'Exitoso'};
   try{
-    await conCargando('Registrando transferencia...', ()=> transferirEntreCuentas(fromId, toId, amount));
+    await conCargando(mode==='recarga'?'Registrando recarga...':'Registrando transferencia...', ()=> crearTransaccion(tx));
     closeModal('transferModal');
     document.getElementById('transferForm').reset();
-    renderAccounts();
-    renderDashboard();
-    toast(`Transferencia de ${fmtMoney(amount)} guardada`);
+    renderAccounts();renderDashboard();renderTransactions();renderBudget();renderGoals();renderDebts();
+    toast(mode==='externa'?`Transferencia externa registrada: ${fmtMoney(amount,from.currency||'PEN')}`:`${mode==='recarga'?'Recarga':'Transferencia'} registrada: ${fmtMoney(amount,from.currency||'PEN')} → ${fmtMoney(destinationAmount,to.currency||'PEN')}`);
   }catch(err){
     console.error(err);
     toast('No se guardó la transferencia: ' + err.message);
@@ -437,13 +496,8 @@ function initAccountsView(){
       if(nearest&&nearest.dataset.accountSlide!==activeAccountId)selectAccount(nearest.dataset.accountSlide,false);
     },90);
   });
-  document.getElementById('transferBtn').addEventListener('click', ()=>{
-    openTxModal();
-    document.getElementById('txType').value = 'expense';
-    populateTransactionSubtypes('expense', 'Transferencia');
-    document.getElementById('txTransferType').value = 'interna';
-    updateTransactionFields();
-  });
+  document.getElementById('transferBtn').addEventListener('click',openDedicatedTransferModal);
+  document.getElementById('dashboardTransferBtn')?.addEventListener('click',openDedicatedTransferModal);
   document.getElementById('requestBtn').addEventListener('click', ()=>{
     toast('Solicitud de dinero enviada');
   });
@@ -457,6 +511,10 @@ function initAccountsView(){
     updateCreditLimitField();
   });
   document.getElementById('transferForm').addEventListener('submit', handleTransfer);
+  document.getElementById('transferFrom').addEventListener('change',updateDedicatedTransferFields);
+  document.getElementById('transferMode').addEventListener('change',updateDedicatedTransferFields);
+  document.getElementById('transferTo').addEventListener('change',updateDedicatedTransferFields);
+  ['transferDestinationAmount','transferExchangeRate','transferCommission'].forEach(id=>document.getElementById(id).addEventListener('input',updateDedicatedTransferAmount));
 }
 
 /**

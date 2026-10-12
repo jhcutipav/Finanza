@@ -190,6 +190,8 @@
       </div>
           <div class="spacer"></div>
           <button class="btn btn-ghost" id="manageWidgetsBtn">Administrar widgets</button>
+          <button class="btn btn-ghost" id="dashboardTransferBtn">Transferir</button>
+          <button class="btn btn-ghost" id="dashboardFixedPaymentBtn">Pagar gasto fijo</button>
           <button class="btn btn-primary" id="addTransactionBtn">+ Agregar Transacción</button>
         </div>
 
@@ -935,20 +937,34 @@
       <button class="modal-close" data-close-modal="transferModal">✕</button>
     </div>
     <form id="transferForm">
+      <div class="form-row">
+        <label>Operación</label>
+        <select id="transferMode"><option value="interna">Transferencia entre cuentas</option><option value="recarga">Recarga de billetera digital</option><option value="externa">Transferencia externa</option></select>
+      </div>
       <div class="form-grid-2">
         <div class="form-row">
           <label>Desde</label>
           <select id="transferFrom"></select>
         </div>
-        <div class="form-row">
+        <div class="form-row" id="transferDestinationRow">
           <label>Hacia</label>
           <select id="transferTo"></select>
         </div>
       </div>
       <div class="form-row">
-        <label>Monto</label>
+        <label id="transferAmountLabel">Monto que sale de la cuenta origen</label>
         <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="$0.00" required>
       </div>
+      <div class="form-grid-2" id="transferExchangeRow" hidden>
+        <div class="form-row"><label>Monto que recibe la cuenta destino</label><input type="number" min="0.01" step="0.01" id="transferDestinationAmount"></div>
+        <div class="form-row"><label>Tipo de cambio (PEN por USD)</label><input type="number" min="0.0001" step="0.0001" id="transferExchangeRate"></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-row"><label id="transferCommissionLabel">Comisión</label><input type="number" min="0" step="0.01" id="transferCommission" value="0"></div>
+        <div class="form-row"><label>Fecha</label><input type="date" id="transferDate" required></div>
+      </div>
+      <div class="form-row" id="transferCommissionPayerRow" hidden><label>¿Quién paga la comisión?</label><select id="transferCommissionPayer"><option value="origen">La cuenta de origen</option><option value="destino">La persona que recibe</option></select></div>
+      <p class="muted small" id="transferHint">Se registrará un egreso en el origen y un ingreso en el destino.</p>
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" data-close-modal="transferModal">Cancelar</button>
         <button type="submit" class="btn btn-primary">Transferir</button>
@@ -988,7 +1004,7 @@
   <div class="modal-box">
     <div class="modal-head"><div><h3>Registrar compromiso mensual</h3><p class="muted small">Elige qué vas a pagar o aportar este mes.</p></div><button class="modal-close" data-close-modal="commitmentPaymentModal">✕</button></div>
     <form id="commitmentPaymentForm">
-      <div class="form-row"><label>Gasto fijo, aporte o cuota</label><select id="commitmentPaymentItem" required></select></div>
+      <div class="form-row"><label id="commitmentPaymentItemLabel">Gasto fijo, aporte o cuota</label><select id="commitmentPaymentItem" required></select></div>
       <p class="muted small" id="commitmentPaymentNote"></p>
       <div id="commitmentPaymentAmountRow" class="form-row"><label id="commitmentPaymentAmountLabel">Monto</label><input type="number" min="0.01" step="0.01" id="commitmentPaymentAmount" required></div>
       <div id="commitmentPaymentAccountRow" class="form-row"><label id="commitmentPaymentAccountLabel">Cuenta de origen</label><select id="commitmentPaymentAccount" required></select></div>

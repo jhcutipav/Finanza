@@ -1,5 +1,7 @@
 /* Inicio de sesión de FinSet; el backend de Apps Script valida todas las sesiones. */
 const FINSET_AUTH_KEY='finset_auth_session';
+const FINSET_SETUP_COOLDOWN_KEY='finset_setup_retry_until';
+let finsetSetupCooldownTimer=null;
 
 /** Obtiene el token de sesión guardado como temporal o persistente. */
 function authStoredToken(){return localStorage.getItem(FINSET_AUTH_KEY)||sessionStorage.getItem(FINSET_AUTH_KEY)||'';}
@@ -21,6 +23,27 @@ function authMessage(id,message,success=false){
   const el=document.getElementById(id);if(!el)return;el.textContent=message;el.classList.toggle('success',success);
 }
 
+/** Muestra en la pantalla de configuración cuánto falta para permitir otro intento. */
+function authStartSetupCooldown(seconds){
+  const until=Date.now()+Math.max(0,Number(seconds)||0)*1000;
+  localStorage.setItem(FINSET_SETUP_COOLDOWN_KEY,String(until));
+  const button=document.querySelector('#authSetupForm button[type="submit"]');
+  const tick=()=>{
+    const remaining=Math.max(0,Math.ceil((until-Date.now())/1000));
+    if(button)button.disabled=remaining>0;
+    if(remaining===0){
+      clearInterval(finsetSetupCooldownTimer);finsetSetupCooldownTimer=null;
+      localStorage.removeItem(FINSET_SETUP_COOLDOWN_KEY);
+      authMessage('authSetupMessage','Ya puedes volver a probar.');
+      return;
+    }
+    const minutes=Math.floor(remaining/60),secs=remaining%60;
+    authMessage('authSetupMessage',`Demasiados intentos. Podrás volver a probar en ${minutes}:${String(secs).padStart(2,'0')}.`);
+  };
+  clearInterval(finsetSetupCooldownTimer);tick();
+  finsetSetupCooldownTimer=setInterval(tick,1000);
+}
+
 /** Activa FinSet tras recibir o restaurar una sesión válida del backend. */
 async function authEnter(token,remember){
   authStoreToken(token,remember);document.body.classList.add('authenticated');
@@ -30,6 +53,8 @@ async function authEnter(token,remember){
 
 /** Conecta el login, la configuración inicial y la recuperación de contraseña. */
 async function initAuthGate(){
+  const savedSetupCooldown=Number(localStorage.getItem(FINSET_SETUP_COOLDOWN_KEY)||0);
+  if(savedSetupCooldown>Date.now())authStartSetupCooldown(Math.ceil((savedSetupCooldown-Date.now())/1000));
   document.getElementById('authLoginForm').addEventListener('submit',async e=>{
     e.preventDefault();authMessage('authLoginMessage','Validando...');
     try{
@@ -44,7 +69,10 @@ async function initAuthGate(){
     if(password!==document.getElementById('authSetupConfirm').value){authMessage('authSetupMessage','Las contraseñas no coinciden.');return;}
     try{
       const result=await apiAuthPost('setupAuth',{setupKey:document.getElementById('authSetupKey').value,email:document.getElementById('authSetupEmail').value,password});
-      if(!result.ok)throw new Error(result.error||'No se pudo configurar el acceso.');
+      if(!result.ok){
+        if(Number(result.retryAfter)>0){authStartSetupCooldown(result.retryAfter);return;}
+        throw new Error(result.error||'No se pudo configurar el acceso.');
+      }
       await authEnter(result.token,true);
     }catch(error){authMessage('authSetupMessage',error.message);}
   });
